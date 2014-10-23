@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FirstViewController : UIViewController
 
+
+#import "UIImage+ProportionalFill.h"
+#import "UIImage+Tint.h"
+
+@interface FirstViewController : UIViewController
 
 @end
 

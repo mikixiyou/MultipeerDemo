@@ -15,6 +15,11 @@
 		350C587B19F0AE1400B96255 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 350C587A19F0AE1400B96255 /* Images.xcassets */; };
 		350C587E19F0AE1400B96255 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 350C587C19F0AE1400B96255 /* LaunchScreen.xib */; };
 		350C588A19F0AE1400B96255 /* MultipeerDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 350C588919F0AE1400B96255 /* MultipeerDemoTests.m */; };
+		35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35387FA219F7955C00FD5C84 /* KKConnectViewController.m */; };
+		35387FA619F79F4400FD5C84 /* KKTalkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */; };
+		35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */; };
+		35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2D19F5EF310061619F /* UIImage+Tint.m */; };
+		35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D3119F6293B0061619F /* KKNodeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +48,16 @@
 		350C588319F0AE1400B96255 /* MultipeerDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultipeerDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		350C588819F0AE1400B96255 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		350C588919F0AE1400B96255 /* MultipeerDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultipeerDemoTests.m; sourceTree = "<group>"; };
+		35387FA119F7955C00FD5C84 /* KKConnectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKConnectViewController.h; sourceTree = "<group>"; };
+		35387FA219F7955C00FD5C84 /* KKConnectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKConnectViewController.m; sourceTree = "<group>"; };
+		35387FA419F79F4400FD5C84 /* KKTalkingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKTalkingViewController.h; sourceTree = "<group>"; };
+		35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKTalkingViewController.m; sourceTree = "<group>"; };
+		35C47D2A19F5EF310061619F /* UIImage+ProportionalFill.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ProportionalFill.h"; sourceTree = "<group>"; };
+		35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ProportionalFill.m"; sourceTree = "<group>"; };
+		35C47D2C19F5EF310061619F /* UIImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Tint.h"; sourceTree = "<group>"; };
+		35C47D2D19F5EF310061619F /* UIImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Tint.m"; sourceTree = "<group>"; };
+		35C47D3019F6293B0061619F /* KKNodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNodeViewController.h; sourceTree = "<group>"; };
+		35C47D3119F6293B0061619F /* KKNodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNodeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,12 +99,19 @@
 		350C586919F0AE1400B96255 /* MultipeerDemo */ = {
 			isa = PBXGroup;
 			children = (
+				35C47D2919F5EF310061619F /* MGImageUtilities */,
 				350C586E19F0AE1400B96255 /* AppDelegate.h */,
 				350C586F19F0AE1400B96255 /* AppDelegate.m */,
 				350C587119F0AE1400B96255 /* FirstViewController.h */,
 				350C587219F0AE1400B96255 /* FirstViewController.m */,
 				350C587419F0AE1400B96255 /* SecondViewController.h */,
 				350C587519F0AE1400B96255 /* SecondViewController.m */,
+				35C47D3019F6293B0061619F /* KKNodeViewController.h */,
+				35C47D3119F6293B0061619F /* KKNodeViewController.m */,
+				35387FA119F7955C00FD5C84 /* KKConnectViewController.h */,
+				35387FA219F7955C00FD5C84 /* KKConnectViewController.m */,
+				35387FA419F79F4400FD5C84 /* KKTalkingViewController.h */,
+				35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */,
 				350C587719F0AE1400B96255 /* Main.storyboard */,
 				350C587A19F0AE1400B96255 /* Images.xcassets */,
 				350C587C19F0AE1400B96255 /* LaunchScreen.xib */,
@@ -122,6 +144,17 @@
 				350C588819F0AE1400B96255 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		35C47D2919F5EF310061619F /* MGImageUtilities */ = {
+			isa = PBXGroup;
+			children = (
+				35C47D2A19F5EF310061619F /* UIImage+ProportionalFill.h */,
+				35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */,
+				35C47D2C19F5EF310061619F /* UIImage+Tint.h */,
+				35C47D2D19F5EF310061619F /* UIImage+Tint.m */,
+			);
+			path = MGImageUtilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -224,10 +257,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */,
 				350C587619F0AE1400B96255 /* SecondViewController.m in Sources */,
+				35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */,
 				350C587019F0AE1400B96255 /* AppDelegate.m in Sources */,
 				350C587319F0AE1400B96255 /* FirstViewController.m in Sources */,
+				35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */,
+				35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */,
 				350C586D19F0AE1400B96255 /* main.m in Sources */,
+				35387FA619F79F4400FD5C84 /* KKTalkingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,6 +456,7 @@
 				350C588F19F0AE1400B96255 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		350C589019F0AE1400B96255 /* Build configuration list for PBXNativeTarget "MultipeerDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -426,6 +465,7 @@
 				350C589219F0AE1400B96255 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
