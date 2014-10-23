@@ -12,6 +12,7 @@
 
 @interface KKTalkingViewController : UIViewController
 
+@property (nonatomic,strong) NSString *talkingType;
 
 @property (nonatomic, assign) id <KKTalkingViewControllerDelegate> delegate;
 @end

@@ -76,6 +76,7 @@
     UITextField *fieldUsername=[[UITextField alloc] initWithFrame:CGRectMake(120, 20, width-130, 40)];
     fieldUsername.delegate=self;
     fieldUsername.borderStyle=UITextBorderStyleRoundedRect;
+    fieldUsername.returnKeyType=UIReturnKeyDone;
     
     [self.view addSubview:fieldUsername];
     

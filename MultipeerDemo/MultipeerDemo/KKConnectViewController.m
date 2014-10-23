@@ -9,7 +9,10 @@
 
 #import "KKConnectViewController.h"
 
-@interface KKConnectViewController () <UITableViewDelegate,UITableViewDataSource,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate>
+
+
+
+@interface KKConnectViewController () <UITableViewDelegate,UITableViewDataSource,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,KKTalkingViewControllerDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic, strong) MCNearbyServiceBrowser *browser;
 
@@ -21,13 +24,21 @@
 
 @property (nonatomic,strong) UIActivityIndicatorView *activityIndicatorView;
 
-@property (nonatomic,strong) UITextView *txtvPeerDetail;
+@property (nonatomic,strong) UITextView *txvPeerDetail;
 
 @property (nonatomic,strong) UIButton *btnConnectPeer;
-@property (nonatomic,strong) UIButton *btnSendMsg;
+
+@property (nonatomic,strong) UITextField *fieldMsg;
+
+@property (nonatomic,strong) UIButton *btnSendPhoto;
 @property (nonatomic,strong) UIButton *btnSendFile;
 
-@property (nonatomic,strong) NSMutableDictionary *dicPeerForSelected;
+@property (nonatomic,strong) NSMutableDictionary *dicSelectedPeer;
+
+@property (nonatomic,strong) KKTalkingViewController *talkingViewController;
+
+
+
 
 
 
@@ -71,11 +82,11 @@
     
     
     
-    self.txtvPeerDetail=[[UITextView alloc] initWithFrame:CGRectMake(10, self.tvPeers.frame.origin.y+self.tvPeers.frame.size.height+2, width-20, 100)];
+    self.txvPeerDetail=[[UITextView alloc] initWithFrame:CGRectMake(10, self.tvPeers.frame.origin.y+self.tvPeers.frame.size.height+2, width-20, 300)];
     
-    [self.view addSubview:self.txtvPeerDetail];
+    [self.view addSubview:self.txvPeerDetail];
     
-    CGRect frame =  self.txtvPeerDetail.frame;
+    CGRect frame =  self.txvPeerDetail.frame;
     
     self.btnConnectPeer=[UIButton buttonWithType:UIButtonTypeSystem];
     self.btnConnectPeer.frame=CGRectMake(0, frame.origin.y+frame.size.height+4, width/3.0, 44);
@@ -84,22 +95,33 @@
     
     [self.btnConnectPeer setTitle:@"connect" forState:UIControlStateNormal];
     
-    self.btnSendMsg=[UIButton buttonWithType:UIButtonTypeSystem];
-    self.btnSendMsg.frame=CGRectMake(width/3.0, frame.origin.y+frame.size.height+4, width/3.0, 44);
-    [self.btnSendMsg addTarget:self action:@selector(sendMsg:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.btnSendMsg setTitle:@"send msg" forState:UIControlStateNormal];
+    
+    UITextField *fieldMsg=[[UITextField alloc] initWithFrame:CGRectMake(3, frame.origin.y+frame.size.height+4, width-106, 40)];
+    fieldMsg.delegate=self;
+    fieldMsg.borderStyle=UITextBorderStyleRoundedRect;
+    fieldMsg.returnKeyType=UIReturnKeyDone;
+    
+    self.btnSendPhoto=[UIButton buttonWithType:UIButtonTypeSystem];
+    self.btnSendPhoto.frame=CGRectMake(width-100, frame.origin.y+frame.size.height+4, 50, 44);
+    [self.btnSendPhoto addTarget:self action:@selector(sendPhoto:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.btnSendPhoto setTitle:@"Photo" forState:UIControlStateNormal];
     
     self.btnSendFile=[UIButton buttonWithType:UIButtonTypeSystem];
-    self.btnSendFile.frame=CGRectMake(2*width/3.0, frame.origin.y+frame.size.height+4, width/3.0, 44);
+    self.btnSendFile.frame=CGRectMake(width-50, frame.origin.y+frame.size.height+4, 50, 44);
     [self.btnSendFile addTarget:self action:@selector(sendFile:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.btnSendFile setTitle:@"send file" forState:UIControlStateNormal];
+    [self.btnSendFile setTitle:@"File" forState:UIControlStateNormal];
     
-    [self.view addSubview:self.btnConnectPeer];
-    [self.view addSubview:self.btnSendMsg];
+
+    [self.view addSubview:self.btnSendPhoto];
+    
     [self.view addSubview:self.btnSendFile];
     
+    [self.view addSubview:fieldMsg];
+    
+    self.fieldMsg=fieldMsg;
     
     
     //--
@@ -107,6 +129,7 @@
     
     self.arrNearbyPeers=[NSMutableArray array];
     
+    self.dicSelectedPeer=nil;
     
 }
 
@@ -342,7 +365,7 @@
     
     NSMutableDictionary *dicPeer = [[self arrNearbyPeersWithStatus:status] objectAtIndex:indexPath.row];
     
-    self.dicPeerForSelected=dicPeer;
+    self.dicSelectedPeer=dicPeer;
     
     
     if (section==0) {
@@ -350,6 +373,8 @@
     }
     
     if (section==1) {
+        
+        [self connectPeer:self];
        
     }
     
@@ -365,7 +390,7 @@
     NSError *parseError = nil;
     NSData  *jsonData = [NSJSONSerialization dataWithJSONObject:[dicPeer objectForKey:@"info"] options:NSJSONWritingPrettyPrinted error:&parseError];
    
-    self.txtvPeerDetail.text= [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    self.txvPeerDetail.text= [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
 //    [tableView cellForRowAtIndexPath:indexPath].backgroundColor=[UIColor grayColor];
     
@@ -376,10 +401,8 @@
 
 -(void)connectPeer:(id)sender
 {
-
-
-    if (self.dicPeerForSelected) {
-        MCPeerID *peerID=[self.dicPeerForSelected objectForKey:@"peerID"];
+    if (self.dicSelectedPeer) {
+        MCPeerID *peerID=[self.dicSelectedPeer objectForKey:@"peerID"];
         
         if (peerID) {
             [self inviteFoundPeerID:peerID withAuto:NO];
@@ -388,30 +411,116 @@
 }
 
 
--(void)sendMsg:(id)sender
-{
-    
-    if (self.dicPeerForSelected) {
-        MCPeerID *peerID=[self.dicPeerForSelected objectForKey:@"peerID"];
-        
-        if (peerID) {
-            [self sendMessageToPeers:@[peerID]];
-        }
-    }
-}
-
 -(void)sendFile:(id)sender
 {
     
-    if (self.dicPeerForSelected) {
-        MCPeerID *peerID=[self.dicPeerForSelected objectForKey:@"peerID"];
+    if (self.dicSelectedPeer) {
+        MCPeerID *peerID=[self.dicSelectedPeer objectForKey:@"peerID"];
         
         if (peerID) {
-            [self sendMessageToPeers:@[peerID]];
+           
+//            [self sendMessageToPeers:@[peerID]];
         }
     }
 }
 
+-(void)sendPhoto:(id)sender
+{
+    
+    if (self.dicSelectedPeer) {
+        MCPeerID *peerID=[self.dicSelectedPeer objectForKey:@"peerID"];
+        
+        if (peerID) {
+//            [self sendMessageToPeers:@[peerID]];
+            
+            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
+            {
+                UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+                picker.delegate = self;
+                picker.allowsEditing = YES;
+                picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                
+                [self presentViewController:picker animated:YES completion:^{
+                    nil;
+                    
+                    
+                    
+                }];
+  
+            }
+            else {
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:@"访问图片库错误"
+                                      message:@""
+                                      delegate:nil
+                                      cancelButtonTitle:@"OK!"
+                                      otherButtonTitles:nil];
+                [alert show];
+
+            }
+        }
+    }
+}
+
+
+//再调用以下委托：
+#pragma mark UIImagePickerControllerDelegate
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    //imageView.image = image; //imageView为自己定义的UIImageView
+    
+    [picker dismissViewControllerAnimated:YES completion:^{
+        
+        // Don't block the UI when writing the image to documents
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            // We only handle a still image
+            UIImage *imageToSave = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+            
+            // Save the new image to the documents directory
+            NSData *pngData = UIImageJPEGRepresentation(imageToSave, 1.0);
+            
+            // Create a unique file name
+            NSDateFormatter *inFormat = [NSDateFormatter new];
+            [inFormat setDateFormat:@"yyMMdd-HHmmss"];
+            NSString *imageName = [NSString stringWithFormat:@"image-%@.JPG", [inFormat stringFromDate:[NSDate date]]];
+            // Create a file path to our documents directory
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:imageName];
+            
+            [pngData writeToFile:filePath atomically:YES]; // Write the file
+            // Get a URL for this file resource
+            NSURL *imageUrl = [NSURL fileURLWithPath:filePath];
+            
+            MCPeerID *peer=[self.dicSelectedPeer objectForKey:@"peerID"];
+            
+            [self.session sendResourceAtURL:imageUrl withName:imageName toPeer:peer withCompletionHandler:^(NSError *error) {
+                if (error) {
+                    NSLog(@"Failed to send picture to %@, %@", peer.displayName, error.localizedDescription);
+                    return;
+                }
+                NSLog(@"Sent picture to %@", peer.displayName);
+                //Clean up the temp file
+                NSFileManager *fileManager = [NSFileManager defaultManager];
+                [fileManager removeItemAtURL:imageUrl error:nil];
+            }];
+        });
+        
+        
+        
+    }];
+    
+}
+
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+
+    [picker dismissViewControllerAnimated:YES completion:^{
+        nil;
+    }];
+
+}
 
 
 - (void)inviteFoundPeerID:(MCPeerID *)foundPeerID  withAuto:(BOOL)atype
@@ -465,6 +574,24 @@
     });
 }
 
+
+-(void)setDicPeerForSelected:(NSMutableDictionary *)dicSelectedPeer
+{
+    _dicSelectedPeer=dicSelectedPeer;
+    
+    if (dicSelectedPeer) {
+        self.fieldMsg.enabled=YES;
+        self.btnSendPhoto.enabled=YES;
+        self.btnSendFile.enabled=YES;
+    }
+    else
+    {
+        self.fieldMsg.enabled=NO;
+        self.btnSendPhoto.enabled=NO;
+        self.btnSendFile.enabled=NO;
+    }
+    
+}
 
 
 
@@ -575,11 +702,16 @@
 
 #pragma mark - found devices methods
 
-- (void)sendMessageToPeers:(NSArray *)peerIDs
+- (void)sendMessage:(NSString *)message toPeers:(NSArray *)peerIDs
 {
     NSError *error;
     
     NSData *msgData = [@"Hello there!" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    if (message) {
+        msgData = [message dataUsingEncoding:NSUTF8StringEncoding];
+    }
+
     
     [self.session sendData:msgData toPeers:peerIDs withMode:MCSessionSendDataReliable error:&error];
     
@@ -614,7 +746,13 @@
                                                           delegate: nil
                                                  cancelButtonTitle:@"Got it"
                                                  otherButtonTitles:nil];
-            [alert show];
+//            [alert show];
+            
+            
+            NSString *message=[@"\n" stringByAppendingFormat:@"%@:%@",peerDisplayName,receivedText];
+            
+            self.txvPeerDetail.text=[self.txvPeerDetail.text stringByAppendingString:message];
+            
         }
         
     });
@@ -636,9 +774,86 @@
         NSLog(@"%s Peer: %@, Resource: %@, Error: %@", __PRETTY_FUNCTION__, peerID.displayName, resourceName, [error localizedDescription]);
     }
     else {
-        NSLog(@"%s Peer: %@, Resource: %@ complete", __PRETTY_FUNCTION__, peerID.displayName, resourceName);
+        NSLog(@"%s Peer: %@, Resource: %@ complete %@", __PRETTY_FUNCTION__, peerID.displayName, resourceName,[localURL absoluteString]);
+ 
+        UIImage *image=[UIImage imageWithData:[NSData dataWithContentsOfURL:localURL]];
+        
+        if (image) {
+             UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"保存图片结果is nill"
+                                      
+                                                                message:@"nil image"
+                                      
+                                                               delegate:self
+                                      
+                                                      cancelButtonTitle:@"确定"
+                                      
+                                                      otherButtonTitles:nil];
+                
+                [alert show];
+            });
+            
+
+        }
+        
+       
+        
+
     }
 }
+
+
+
+
+
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+
+{
+    
+    NSString *msg = nil;
+    
+    if(error != NULL)
+        
+    {
+        
+        msg = @"保存图片失败";
+        
+    }
+    
+    else
+        
+    {
+        
+        msg = @"保存图片成功";
+        
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"保存图片结果提示"
+                              
+                                                        message:msg
+                              
+                                                       delegate:self
+                              
+                                              cancelButtonTitle:@"确定"
+                              
+                                              otherButtonTitles:nil];
+        
+        [alert show];
+    });
+    
+
+}
+
+
+
+
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {
     NSLog(@"%s Peer: %@, Stream: %@", __PRETTY_FUNCTION__, peerID.displayName, streamName);
@@ -712,7 +927,7 @@
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:title
                                           message:nil
-                                          preferredStyle:UIAlertControllerStyleActionSheet];
+                                          preferredStyle:UIAlertControllerStyleAlert];
     
     
     UIAlertAction *cancelAction = [UIAlertAction
@@ -776,6 +991,33 @@
 }
 
 
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    
+    
+    if (self.dicSelectedPeer) {
+        
+        MCPeerID *peerID=self.session.myPeerID;
+        
+        if (peerID) {
+            
+            [self sendMessage:textField.text toPeers:@[peerID]];
+            
+            NSString *message=[@"\n" stringByAppendingFormat:@"%@:%@",peerID.displayName,textField.text];
+            
+            self.txvPeerDetail.text=[self.txvPeerDetail.text stringByAppendingString:message];
+            
+        }
+    }
+    
+    textField.text=nil;
+    
+    return YES;
+    
+    
+}
 
 
 @end
