@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "KKTalkingViewController.h"
-
 static NSString * const kServiceType = @"KKNearbyDemo";
 
 #import <MultipeerConnectivity/MultipeerConnectivity.h>

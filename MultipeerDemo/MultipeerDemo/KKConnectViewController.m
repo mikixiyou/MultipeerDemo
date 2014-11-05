@@ -10,9 +10,7 @@
 #import "KKConnectViewController.h"
 
 
-
-
-@interface KKConnectViewController () <UITableViewDelegate,UITableViewDataSource,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,KKTalkingViewControllerDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
+@interface KKConnectViewController () <UITableViewDelegate,UITableViewDataSource,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSStreamDelegate>
 
 @property (nonatomic, strong) MCNearbyServiceBrowser *browser;
 
@@ -26,7 +24,9 @@
 
 @property (nonatomic,strong) UITextView *txvPeerDetail;
 
-@property (nonatomic,strong) UIButton *btnConnectPeer;
+@property (nonatomic,strong) UIProgressView *progressViewFileSend;
+
+
 
 @property (nonatomic,strong) UITextField *fieldMsg;
 
@@ -35,10 +35,14 @@
 
 @property (nonatomic,strong) NSMutableDictionary *dicSelectedPeer;
 
-@property (nonatomic,strong) KKTalkingViewController *talkingViewController;
+@property (nonatomic,strong) NSMutableData *streamData;
+
+@property (nonatomic,strong) NSDecimalNumber *bytesRead;
 
 
+@property (nonatomic,strong) NSOutputStream *outputStreamer;
 
+@property (nonatomic,strong) NSInputStream  *inputStreamer;
 
 
 
@@ -87,14 +91,12 @@
     [self.view addSubview:self.txvPeerDetail];
     
     CGRect frame =  self.txvPeerDetail.frame;
+
+    UIProgressView *progressView=[[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+    progressView.frame=CGRectMake(0, frame.origin.y+frame.size.height+1, width, 2);
     
-    self.btnConnectPeer=[UIButton buttonWithType:UIButtonTypeSystem];
-    self.btnConnectPeer.frame=CGRectMake(0, frame.origin.y+frame.size.height+4, width/3.0, 44);
-    
-    [self.btnConnectPeer addTarget:self action:@selector(connectPeer:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.btnConnectPeer setTitle:@"connect" forState:UIControlStateNormal];
-    
+    self.progressViewFileSend=progressView;
+    [self.view addSubview:self.progressViewFileSend];
     
     
     UITextField *fieldMsg=[[UITextField alloc] initWithFrame:CGRectMake(3, frame.origin.y+frame.size.height+4, width-106, 40)];
@@ -125,11 +127,11 @@
     
     
     //--
-    self.view.backgroundColor=[UIColor whiteColor];
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    self.arrNearbyPeers=[NSMutableArray array];
+    self.arrNearbyPeers = [NSMutableArray array];
     
-    self.dicSelectedPeer=nil;
+    self.dicSelectedPeer = nil;
     
 }
 
@@ -257,19 +259,22 @@
     
 }
 
--(NSMutableDictionary *)nearbyPeerFromArrWithPeerID:(MCPeerID *)peerID
+-(NSMutableDictionary *)peerOfArrNearbyPeersWithPeerID:(MCPeerID *)peerID
 {
     
-    NSMutableDictionary *dicPeerSelected;
+    NSMutableDictionary *dicSelectedPeer;
     
     for (NSMutableDictionary *dicPeer in self.arrNearbyPeers) {
-        if ([dicPeer objectForKey:@"peerID"] == peerID) {
-            dicPeerSelected=dicPeer;
+        
+        MCPeerID *tempPeerID=[dicPeer objectForKey:@"peerID"];
+        
+        if ( [tempPeerID.displayName isEqualToString:peerID.displayName]) {
+            dicSelectedPeer=dicPeer;
             break;
         }
     }
     
-    return dicPeerSelected;
+    return dicSelectedPeer;
     
 }
 
@@ -333,10 +338,7 @@
     
     NSMutableDictionary *dicPeer = [[self arrNearbyPeersWithStatus:status] objectAtIndex:indexPath.row];
     
-    MCPeerID *peerID=[dicPeer  objectForKey:@"peerID"];
-    
-    cell.textLabel.text = [peerID.displayName stringByAppendingFormat:@" %@",status];
-    
+    cell.textLabel.text = [[[dicPeer objectForKey:@"info"] objectForKey:@"nickname"] stringByAppendingFormat:@" %@",status];
     
     return cell;
 }
@@ -420,6 +422,33 @@
         if (peerID) {
            
 //            [self sendMessageToPeers:@[peerID]];
+            
+            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
+            {
+                UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+                picker.delegate = self;
+                picker.allowsEditing = NO;
+                picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                
+                [self presentViewController:picker animated:YES completion:^{
+                    nil;
+                    
+                    
+                    
+                }];
+                
+            }
+            else {
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:@"访问图片库错误"
+                                      message:@""
+                                      delegate:nil
+                                      cancelButtonTitle:@"OK!"
+                                      otherButtonTitles:nil];
+                [alert show];
+                
+            }
+
         }
     }
 }
@@ -470,45 +499,140 @@
 {
     //imageView.image = image; //imageView为自己定义的UIImageView
     
-    [picker dismissViewControllerAnimated:YES completion:^{
-        
-        // Don't block the UI when writing the image to documents
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            // We only handle a still image
-            UIImage *imageToSave = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+    if (picker.allowsEditing) {
+        [picker dismissViewControllerAnimated:YES completion:^{
             
-            // Save the new image to the documents directory
-            NSData *pngData = UIImageJPEGRepresentation(imageToSave, 1.0);
+            // Don't block the UI when writing the image to documents
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                // We only handle a still image
+                UIImage *imageToSave = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+                
+                // Save the new image to the documents directory
+                NSData *pngData = UIImageJPEGRepresentation(imageToSave, 1.0);
+                
+                // Create a unique file name
+                NSDateFormatter *inFormat = [NSDateFormatter new];
+                [inFormat setDateFormat:@"yyMMdd-HHmmss"];
+                NSString *imageName = [NSString stringWithFormat:@"image-%@.JPG", [inFormat stringFromDate:[NSDate date]]];
+                // Create a file path to our documents directory
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:imageName];
+                
+                NSInputStream *inputStreamForFile = [NSInputStream inputStreamWithFileAtPath:filePath];
+                
+                
+                
+                [pngData writeToFile:filePath atomically:YES]; // Write the file
+                // Get a URL for this file resource
+                NSURL *imageUrl = [NSURL fileURLWithPath:filePath];
+                
+                MCPeerID *peer=[self.dicSelectedPeer objectForKey:@"peerID"];
+                
+                [self.session sendResourceAtURL:imageUrl withName:imageName toPeer:peer withCompletionHandler:^(NSError *error) {
+                    if (error) {
+                        NSLog(@"Failed to send picture to %@, %@", peer.displayName, error.localizedDescription);
+                        return;
+                    }
+                    NSLog(@"Sent picture to %@", peer.displayName);
+                    //Clean up the temp file
+                    NSFileManager *fileManager = [NSFileManager defaultManager];
+                    [fileManager removeItemAtURL:imageUrl error:nil];
+                }];
+            });
             
-            // Create a unique file name
-            NSDateFormatter *inFormat = [NSDateFormatter new];
-            [inFormat setDateFormat:@"yyMMdd-HHmmss"];
-            NSString *imageName = [NSString stringWithFormat:@"image-%@.JPG", [inFormat stringFromDate:[NSDate date]]];
-            // Create a file path to our documents directory
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:imageName];
             
-            [pngData writeToFile:filePath atomically:YES]; // Write the file
-            // Get a URL for this file resource
-            NSURL *imageUrl = [NSURL fileURLWithPath:filePath];
             
-            MCPeerID *peer=[self.dicSelectedPeer objectForKey:@"peerID"];
+        }];
+    }
+    else
+    {
+        [picker dismissViewControllerAnimated:YES completion:^{
             
-            [self.session sendResourceAtURL:imageUrl withName:imageName toPeer:peer withCompletionHandler:^(NSError *error) {
+            // Don't block the UI when writing the image to documents
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                
+                MCPeerID *peer=[self.dicSelectedPeer objectForKey:@"peerID"];
+                
+                NSError *error;
+                
+                self.outputStreamer = [self.session startStreamWithName:@"music" toPeer:peer error:&error];
+                
+                self.outputStreamer.delegate=self;
+                
                 if (error) {
-                    NSLog(@"Failed to send picture to %@, %@", peer.displayName, error.localizedDescription);
-                    return;
+                    NSLog(@"Error: %@", [error userInfo].description);
                 }
-                NSLog(@"Sent picture to %@", peer.displayName);
-                //Clean up the temp file
-                NSFileManager *fileManager = [NSFileManager defaultManager];
-                [fileManager removeItemAtURL:imageUrl error:nil];
-            }];
-        });
+                else
+                {
+                    
+                    [self.outputStreamer scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+                    
+                    [self.outputStreamer open];
+                    
+                }
+                
+                
+                
+                
+                // We only handle a still image
+                UIImage *imageToSave = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+                
+                // Save the new image to the documents directory
+                NSData *pngData = UIImageJPEGRepresentation(imageToSave, 1.0);
+                
+                // Create a unique file name
+                NSDateFormatter *inFormat = [NSDateFormatter new];
+                [inFormat setDateFormat:@"yyMMdd-HHmmss"];
+                NSString *imageName = [NSString stringWithFormat:@"image-%@.JPG", [inFormat stringFromDate:[NSDate date]]];
+                // Create a file path to our documents directory
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:imageName];
+                
+                
+                NSData *newData = UIImagePNGRepresentation([UIImage imageNamed:imageName]);
+                
+                newData=pngData;
+                
+                
+                int index = 0;
+                int totalLen = [newData length];
+                uint8_t buffer[1024];
+                uint8_t *readBytes = (uint8_t *)[newData bytes];
+                
+                while (index < totalLen) {
+                    if ([self.outputStreamer hasSpaceAvailable]) {
+                        int indexLen =  (1024>(totalLen-index))?(totalLen-index):1024;
+                        
+                        (void)memcpy(buffer, readBytes, indexLen);
+                        
+                        int written = [self.outputStreamer write:buffer maxLength:indexLen];
+                        
+                        if (written < 0) {
+                            break;
+                        }
+                        
+                        index += written;
+                        
+                        readBytes += written;
+                    }
+                }
+                
+                
+                
+                NSLog(@"self.outputStreamer.streamStatus is %u",self.outputStreamer.streamStatus);
+
+                
+            });
+            
+      
+            
+            
+            
+        }];
+    
         
-        
-        
-    }];
+    }
+
     
 }
 
@@ -521,6 +645,32 @@
     }];
 
 }
+
+
+
+#pragma mark - found devices methods
+
+- (void)sendMessage:(NSString *)message toPeers:(NSArray *)peerIDs
+{
+    NSError *error;
+    
+    NSData *msgData = [@"Hello there!" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    if (message) {
+        msgData = [message dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    
+    
+    [self.session sendData:msgData toPeers:peerIDs withMode:MCSessionSendDataReliable error:&error];
+    
+    if (error)
+        NSLog(@"SendData error: %@", error);
+    else
+        NSLog(@"Sent message");
+    
+}
+
+
 
 
 - (void)inviteFoundPeerID:(MCPeerID *)foundPeerID  withAuto:(BOOL)atype
@@ -595,22 +745,41 @@
 
 
 
+
+
 #pragma mark - MCNearbyServiceBrowserDelegate methods
 
 - (void)browser:(MCNearbyServiceBrowser *)browser foundPeer:(MCPeerID *)peerID withDiscoveryInfo:(NSDictionary *)info {
     
     NSLog(@"FoundPeer: %@, %@", peerID.displayName, info);
     
-    NSMutableDictionary *dicPeer=[NSMutableDictionary dictionaryWithDictionary:@{@"peerID":peerID,@"info":info,@"status":@"disconnect"}];
+    
+    BOOL existed=NO;
+    
+    for (NSMutableDictionary *dic in self.arrNearbyPeers) {
+        MCPeerID *tempPeerID=[dic objectForKey:@"peerID"];
+        if ([peerID.displayName isEqualToString:tempPeerID.displayName]) {
+            
+            [dic setObject:peerID forKey:@"peerID"];
+            [dic setObject:info forKey:@"info"];
+            
+            NSString *status=[dic objectForKey:@"status"];
+            
+//            [dic setObject:@"disconnect" forKey:@"status"];
+            
+            existed=YES;
+            break;
+        }
+
+    }
     
     
-    if ([self.arrNearbyPeers containsObject:dicPeer]) {
-        NSLog(@"twice FoundPeer: %@, %@", peerID.displayName, info);
+    if (!existed) {
+        
+        NSMutableDictionary *dicPeer=[NSMutableDictionary dictionaryWithDictionary:@{@"peerID":peerID,@"info":info,@"status":@"disconnect"}];
+           [self.arrNearbyPeers addObject:dicPeer];
     }
-    else
-    {
-        [self.arrNearbyPeers addObject:dicPeer];
-    }
+    
     
     // Update UI on main thread
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -628,7 +797,7 @@
 
     // 可以删除掉发现的 peer
     
-    [self.arrNearbyPeers removeObject:[self nearbyPeerFromArrWithPeerID:peerID]];
+    [self.arrNearbyPeers removeObject:[self peerOfArrNearbyPeersWithPeerID:peerID]];
     
     // Update UI on main thread
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -660,11 +829,12 @@
     NSLog(@"self.session is %@",self.session);
     
     
-    NSMutableDictionary *dicPeer=[self nearbyPeerFromArrWithPeerID:peerID];
+    NSMutableDictionary *dicPeer=[self peerOfArrNearbyPeersWithPeerID:peerID];
     
     
     if (state==MCSessionStateConnecting) {
         NSLog(@"MCSessionDelegate Connecting");
+        
         
         self.connecting=YES;
         
@@ -700,36 +870,16 @@
 }
 
 
-#pragma mark - found devices methods
-
-- (void)sendMessage:(NSString *)message toPeers:(NSArray *)peerIDs
-{
-    NSError *error;
-    
-    NSData *msgData = [@"Hello there!" dataUsingEncoding:NSUTF8StringEncoding];
-    
-    if (message) {
-        msgData = [message dataUsingEncoding:NSUTF8StringEncoding];
-    }
-
-    
-    [self.session sendData:msgData toPeers:peerIDs withMode:MCSessionSendDataReliable error:&error];
-    
-    if (error)
-        NSLog(@"SendData error: %@", error);
-    else
-        NSLog(@"Sent message");
-    
-}
 
 
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     // Decode the incoming data to a UTF8 encoded string
     NSString *msg = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    
     NSLog(@"From %@: %@", peerID.displayName, msg);
     
-    NSString *peerDisplayName = peerID.displayName;
+    NSString *peerDisplayName = [[[self peerOfArrNearbyPeersWithPeerID:peerID] objectForKey:@"info"] objectForKey:@"nickname"];
     
     NSData *receivedData = data;
     NSString *receivedText = [[NSString alloc] initWithData:receivedData encoding:NSUTF8StringEncoding];
@@ -767,6 +917,14 @@
 
 - (void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress {
     NSLog(@"%s Resource: %@, Peer: %@, Progress %@", __PRETTY_FUNCTION__, resourceName, peerID.displayName, progress);
+    
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        self.progressViewFileSend.progress=progress.fractionCompleted;
+    });
+    
+
+    
+    
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
@@ -857,12 +1015,125 @@
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {
     NSLog(@"%s Peer: %@, Stream: %@", __PRETTY_FUNCTION__, peerID.displayName, streamName);
+    
+    
+    self.inputStreamer=stream;
+    
+    // Start receiving data
+    self.inputStreamer.delegate = self;
+    
+    [self.inputStreamer scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    [self.inputStreamer open];
+
+    
 }
+
+- (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode
+{
+    if (aStream == self.outputStreamer) {
+        
+        if (eventCode == NSStreamEventHasBytesAvailable) {
+            // handle incoming data
+            if(!_streamData) {
+                _streamData = [NSMutableData data];
+            }
+            
+            if (!_bytesRead) {
+                _bytesRead=[NSDecimalNumber decimalNumberWithString:@"0"];
+            }
+            
+            uint8_t buf[1024];
+            unsigned int len = 0;
+            len = [(NSInputStream *)aStream read:buf maxLength:1024];
+            if(len) {
+                [_streamData appendBytes:(const void *)buf length:len];
+                // bytesRead is an instance variable of type NSNumber.
+                [self.bytesRead decimalNumberByAdding:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",len]]];
+                
+            } else {
+                NSLog(@"no buffer!");
+            }
+            
+            NSLog(@"self.bytesRead is %d",[self.bytesRead integerValue]);
+            
+            
+        } else if (eventCode == NSStreamEventEndEncountered) {
+            // notify application that stream has ended
+            
+            [aStream close];
+            [aStream removeFromRunLoop:[NSRunLoop currentRunLoop]
+                               forMode:NSDefaultRunLoopMode];
+            //        [aStream release];
+            aStream = nil; // stream is ivar, so reinit it
+            _bytesRead=nil;
+            _streamData=nil;
+            
+            
+            
+        } else if (eventCode == NSStreamEventErrorOccurred) {
+            // notify application that stream has encountered and error
+        }
+        
+    }
+    else if (aStream == self.inputStreamer)
+    {
+    
+        
+        if (eventCode == NSStreamEventHasBytesAvailable) {
+            // handle incoming data
+            if(!_streamData) {
+                _streamData = [NSMutableData data];
+            }
+            
+            if (!_bytesRead) {
+                _bytesRead=[NSDecimalNumber decimalNumberWithString:@"0"];
+            }
+            
+            uint8_t buf[1024];
+            unsigned int len = 0;
+            len = [(NSInputStream *)aStream read:buf maxLength:1024];
+            if(len) {
+                [_streamData appendBytes:(const void *)buf length:len];
+                // bytesRead is an instance variable of type NSNumber.
+                [self.bytesRead decimalNumberByAdding:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%d",len]]];
+                
+            } else {
+                NSLog(@"no buffer!");
+            }
+            
+            NSLog(@"self.bytesRead is %d",[self.bytesRead integerValue]);
+            
+            
+        } else if (eventCode == NSStreamEventEndEncountered) {
+            // notify application that stream has ended
+            
+            [aStream close];
+            [aStream removeFromRunLoop:[NSRunLoop currentRunLoop]
+                               forMode:NSDefaultRunLoopMode];
+            //        [aStream release];
+            aStream = nil; // stream is ivar, so reinit it
+            _bytesRead=nil;
+            _streamData=nil;
+            
+            
+            
+        } else if (eventCode == NSStreamEventErrorOccurred) {
+            // notify application that stream has encountered and error
+        }
+        
+    }
+    
+
+}
+
 
 - (void)session:(MCSession *)session didReceiveCertificate:(NSArray *)cert fromPeer:(MCPeerID *)peerID certificateHandler:(void(^)(BOOL accept))certHandler {
     NSLog(@"%s Peer: %@", __PRETTY_FUNCTION__, peerID.displayName);
     certHandler(YES);
 }
+
+
+
 
 
 
@@ -903,7 +1174,7 @@
     
     NSLog(@"Invitation from: %@, info=%@", remotePeerID.displayName, dicContext);
     
-    NSDictionary *dicDevice=@{@"peername":remotePeerID.displayName,@"devname":[dicContext objectForKey:@"devname"],@"uuid":[dicContext objectForKey:@"uuid"]};
+    NSDictionary *dicDevice=@{@"uuid":remotePeerID.displayName,@"devname":[dicContext objectForKey:@"devname"],@"nickname":[dicContext objectForKey:@"nickname"]};
     
     
     if (self.session==nil) {
@@ -915,11 +1186,11 @@
     
     
     
-    NSString *title=[NSString stringWithFormat:NSLocalizedString(@"Received Invitation from %@", @"Received Invitation from {Peer}"), remotePeerID.displayName];
+    NSString *title=[NSString stringWithFormat:NSLocalizedString(@"Received Invitation from %@", @"Received Invitation from {Peer}"), [dicContext objectForKey:@"nickname"]];
     
     
     
-    NSLog(@"Invitation from: %@ the end.", remotePeerID.displayName);
+    NSLog(@"Invitation from: %@ the end.", [dicContext objectForKey:@"nickname"]);
     
     
     //-----
@@ -999,13 +1270,15 @@
     
     if (self.dicSelectedPeer) {
         
-        MCPeerID *peerID=self.session.myPeerID;
+        MCPeerID *selectedPeerID=[self.dicSelectedPeer objectForKey:@"peerID"];
         
-        if (peerID) {
+        if (selectedPeerID) {
             
-            [self sendMessage:textField.text toPeers:@[peerID]];
+            [self sendMessage:textField.text toPeers:@[selectedPeerID]];
             
-            NSString *message=[@"\n" stringByAppendingFormat:@"%@:%@",peerID.displayName,textField.text];
+            NSString *peerDisplayName = [self.advertiser.discoveryInfo objectForKey:@"nickname"];
+            
+            NSString *message=[@"\n" stringByAppendingFormat:@"%@:%@",peerDisplayName,textField.text];
             
             self.txvPeerDetail.text=[self.txvPeerDetail.text stringByAppendingString:message];
             

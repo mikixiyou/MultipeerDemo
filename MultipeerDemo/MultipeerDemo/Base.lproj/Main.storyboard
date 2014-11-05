@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Hz7-iM-kog">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Hz7-iM-kog">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
         <!--Node View Controller-->
@@ -17,10 +17,52 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <segue destination="6Ok-Lp-UfT" kind="presentation" identifier="segNearby" id="I56-0M-OaZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bMg-xn-Uqk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="357" y="-221"/>
+            <point key="canvasLocation" x="-437" y="-715"/>
+        </scene>
+        <!--Nearby View Controller-->
+        <scene sceneID="noU-yt-Mne">
+            <objects>
+                <viewController id="6Ok-Lp-UfT" customClass="KKNearbyViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="3rl-Ie-bJE"/>
+                        <viewControllerLayoutGuide type="bottom" id="Q7A-b1-2i3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ak7-uv-CZw">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <segue destination="a42-nL-zVz" kind="presentation" identifier="segTalking" id="dmW-pP-QiO"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SA0-Rh-Blf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="303" y="-715"/>
+        </scene>
+        <!--Talking View Controller-->
+        <scene sceneID="yPb-6d-zAW">
+            <objects>
+                <viewController id="a42-nL-zVz" customClass="KKTalkingViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qBX-oL-AR2"/>
+                        <viewControllerLayoutGuide type="bottom" id="sbz-FE-JI6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="KVZ-lB-YHa">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gxh-4u-e82" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1021" y="-668"/>
         </scene>
         <!--First-->
         <scene sceneID="hNz-n2-bh7">
@@ -119,7 +161,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="0.0"/>
+            <point key="canvasLocation" x="97" y="557"/>
         </scene>
     </scenes>
     <resources>

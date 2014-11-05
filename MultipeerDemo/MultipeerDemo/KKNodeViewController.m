@@ -11,9 +11,11 @@
 #import <sys/utsname.h>
 #import <MultipeerConnectivity/MultipeerConnectivity.h>
 
+#import "KKNearbyViewController.h"
 
 
-@interface KKNodeViewController () <UITextFieldDelegate,MCNearbyServiceAdvertiserDelegate>
+
+@interface KKNodeViewController () <UITextFieldDelegate,MCNearbyServiceAdvertiserDelegate,KKNearbyViewControllerDelegate>
 {
     void (^advertiserInvitationHandler)(BOOL accept, MCSession *session);
 }
@@ -37,6 +39,9 @@
 @property (nonatomic, assign) UIBarButtonItem *barItemTalking;
 
 @property (nonatomic, strong) MCPeerID *remotePeerID;
+
+
+@property (nonatomic,strong) KKNearbyViewController *nearbyViewController;
 
 
 
@@ -89,8 +94,11 @@
     UIBarButtonItem *barItemTalking =  [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(catchNearbyPeer:)];
     
     UIBarButtonItem *flex1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+  
+    UIBarButtonItem *barItemNearby =  [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(segNearbyPeersView:)];
     
-    NSArray *barItemsGridFooter=@[flex1,barItemTalking];
+    
+    NSArray *barItemsGridFooter=@[barItemNearby,flex1,barItemTalking];
     
     [barGridFooter setItems:barItemsGridFooter];
     
@@ -107,20 +115,53 @@
 }
 
 
+// ---- kkaccount app  sync data ---- ///
+
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"segNearby"]) {
+        KKNearbyViewController *dest = [segue destinationViewController];
+        dest.delegate = self;
+    }
+    
+}
+
+
+-(void)segNearbyPeersView:(id)sender
+{
+    [self performSegueWithIdentifier:@"segNearby" sender:sender];
+}
+
+
+-(void)dismissNearbyViewController
+{
+    
+
+}
+
+
+//----- talking app ---- //
+
 - (void)configNearbyManagerWithName:(NSString *)name
 {
-    NSString *displayName;
+    NSString *nickname;
+    
+    NSString *uuidStr=[[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    
     
     if (name.length==0) {
-        displayName=[[UIDevice currentDevice] name];
+        nickname=[[UIDevice currentDevice] name];
     }
     else
     {
-        displayName=name;
+        nickname=name;
     }
     
     // Create myPeerID
-    self.peerID = [[MCPeerID alloc] initWithDisplayName:displayName];
+    if (!self.peerID) {
+         self.peerID = [[MCPeerID alloc] initWithDisplayName:uuidStr];
+    }
     
     // Determine device model
     struct utsname systemInfo;
@@ -130,7 +171,7 @@
     // Create DNS-SD TXT record
     
     NSDictionary *info = @{
-                           @"uuid":[[[UIDevice currentDevice] identifierForVendor] UUIDString],
+                           @"nickname":nickname,
                            @"version":[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"],
                            @"build":[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"],
                            @"devtype":devType,
@@ -145,6 +186,9 @@
     self.advertiser.delegate = self;
     
 }
+
+
+
 
 
 
@@ -211,9 +255,7 @@
     
     NSDictionary *dicContext=[NSKeyedUnarchiver unarchiveObjectWithData:context];
     
-    NSLog(@"Invitation from: %@, info=%@", remotePeerID.displayName, dicContext);
-    
-    NSDictionary *dicDevice=@{@"peername":remotePeerID.displayName,@"devname":[dicContext objectForKey:@"devname"],@"uuid":[dicContext objectForKey:@"uuid"]};
+    NSLog(@"Invitation from: %@, info=%@", [dicContext objectForKey:@"nickname"], dicContext);
     
     self.remotePeerID=remotePeerID;
     

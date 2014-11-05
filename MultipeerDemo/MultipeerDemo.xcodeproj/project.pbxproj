@@ -17,6 +17,12 @@
 		350C588A19F0AE1400B96255 /* MultipeerDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 350C588919F0AE1400B96255 /* MultipeerDemoTests.m */; };
 		35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35387FA219F7955C00FD5C84 /* KKConnectViewController.m */; };
 		35387FA619F79F4400FD5C84 /* KKTalkingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */; };
+		354A63461A0342F100DBDCBE /* KKNearbyPeer.m in Sources */ = {isa = PBXBuildFile; fileRef = 354A63451A0342F100DBDCBE /* KKNearbyPeer.m */; };
+		35838AC91A075AB800797A40 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 35838AC21A075AB800797A40 /* GTMBase64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		35838ACA1A075AB800797A40 /* GTMLogger+ASL.m in Sources */ = {isa = PBXBuildFile; fileRef = 35838AC61A075AB800797A40 /* GTMLogger+ASL.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		35838ACB1A075AB800797A40 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 35838AC81A075AB800797A40 /* GTMLogger.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		3593A2EE19FF3B450050915E /* KKNearbyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3593A2ED19FF3B450050915E /* KKNearbyViewController.m */; };
+		3593A2F119FF4CB40050915E /* KKNearbyAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */; };
 		35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */; };
 		35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2D19F5EF310061619F /* UIImage+Tint.m */; };
 		35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D3119F6293B0061619F /* KKNodeViewController.m */; };
@@ -52,6 +58,20 @@
 		35387FA219F7955C00FD5C84 /* KKConnectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKConnectViewController.m; sourceTree = "<group>"; };
 		35387FA419F79F4400FD5C84 /* KKTalkingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKTalkingViewController.h; sourceTree = "<group>"; };
 		35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKTalkingViewController.m; sourceTree = "<group>"; };
+		354A63441A0342F100DBDCBE /* KKNearbyPeer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNearbyPeer.h; sourceTree = "<group>"; };
+		354A63451A0342F100DBDCBE /* KKNearbyPeer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNearbyPeer.m; sourceTree = "<group>"; };
+		35838AC11A075AB800797A40 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
+		35838AC21A075AB800797A40 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
+		35838AC31A075AB800797A40 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		35838AC41A075AB800797A40 /* GTMGarbageCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMGarbageCollection.h; sourceTree = "<group>"; };
+		35838AC51A075AB800797A40 /* GTMLogger+ASL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMLogger+ASL.h"; sourceTree = "<group>"; };
+		35838AC61A075AB800797A40 /* GTMLogger+ASL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMLogger+ASL.m"; sourceTree = "<group>"; };
+		35838AC71A075AB800797A40 /* GTMLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMLogger.h; sourceTree = "<group>"; };
+		35838AC81A075AB800797A40 /* GTMLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMLogger.m; sourceTree = "<group>"; };
+		3593A2EC19FF3B450050915E /* KKNearbyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNearbyViewController.h; sourceTree = "<group>"; };
+		3593A2ED19FF3B450050915E /* KKNearbyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNearbyViewController.m; sourceTree = "<group>"; };
+		3593A2EF19FF4CB40050915E /* KKNearbyAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNearbyAlertView.h; sourceTree = "<group>"; };
+		3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNearbyAlertView.m; sourceTree = "<group>"; };
 		35C47D2A19F5EF310061619F /* UIImage+ProportionalFill.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ProportionalFill.h"; sourceTree = "<group>"; };
 		35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ProportionalFill.m"; sourceTree = "<group>"; };
 		35C47D2C19F5EF310061619F /* UIImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Tint.h"; sourceTree = "<group>"; };
@@ -99,6 +119,7 @@
 		350C586919F0AE1400B96255 /* MultipeerDemo */ = {
 			isa = PBXGroup;
 			children = (
+				35838AC01A075AB800797A40 /* Google */,
 				35C47D2919F5EF310061619F /* MGImageUtilities */,
 				350C586E19F0AE1400B96255 /* AppDelegate.h */,
 				350C586F19F0AE1400B96255 /* AppDelegate.m */,
@@ -112,6 +133,12 @@
 				35387FA219F7955C00FD5C84 /* KKConnectViewController.m */,
 				35387FA419F79F4400FD5C84 /* KKTalkingViewController.h */,
 				35387FA519F79F4400FD5C84 /* KKTalkingViewController.m */,
+				3593A2EC19FF3B450050915E /* KKNearbyViewController.h */,
+				3593A2ED19FF3B450050915E /* KKNearbyViewController.m */,
+				3593A2EF19FF4CB40050915E /* KKNearbyAlertView.h */,
+				3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */,
+				354A63441A0342F100DBDCBE /* KKNearbyPeer.h */,
+				354A63451A0342F100DBDCBE /* KKNearbyPeer.m */,
 				350C587719F0AE1400B96255 /* Main.storyboard */,
 				350C587A19F0AE1400B96255 /* Images.xcassets */,
 				350C587C19F0AE1400B96255 /* LaunchScreen.xib */,
@@ -144,6 +171,21 @@
 				350C588819F0AE1400B96255 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		35838AC01A075AB800797A40 /* Google */ = {
+			isa = PBXGroup;
+			children = (
+				35838AC11A075AB800797A40 /* GTMBase64.h */,
+				35838AC21A075AB800797A40 /* GTMBase64.m */,
+				35838AC31A075AB800797A40 /* GTMDefines.h */,
+				35838AC41A075AB800797A40 /* GTMGarbageCollection.h */,
+				35838AC51A075AB800797A40 /* GTMLogger+ASL.h */,
+				35838AC61A075AB800797A40 /* GTMLogger+ASL.m */,
+				35838AC71A075AB800797A40 /* GTMLogger.h */,
+				35838AC81A075AB800797A40 /* GTMLogger.m */,
+			);
+			path = Google;
 			sourceTree = "<group>";
 		};
 		35C47D2919F5EF310061619F /* MGImageUtilities */ = {
@@ -258,12 +300,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */,
+				354A63461A0342F100DBDCBE /* KKNearbyPeer.m in Sources */,
+				3593A2F119FF4CB40050915E /* KKNearbyAlertView.m in Sources */,
+				35838ACB1A075AB800797A40 /* GTMLogger.m in Sources */,
 				350C587619F0AE1400B96255 /* SecondViewController.m in Sources */,
 				35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */,
 				350C587019F0AE1400B96255 /* AppDelegate.m in Sources */,
 				350C587319F0AE1400B96255 /* FirstViewController.m in Sources */,
 				35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */,
 				35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */,
+				35838ACA1A075AB800797A40 /* GTMLogger+ASL.m in Sources */,
+				3593A2EE19FF3B450050915E /* KKNearbyViewController.m in Sources */,
+				35838AC91A075AB800797A40 /* GTMBase64.m in Sources */,
 				350C586D19F0AE1400B96255 /* main.m in Sources */,
 				35387FA619F79F4400FD5C84 /* KKTalkingViewController.m in Sources */,
 			);
@@ -388,6 +436,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MultipeerDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -398,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = MultipeerDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
