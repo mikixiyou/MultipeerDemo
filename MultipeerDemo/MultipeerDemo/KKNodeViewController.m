@@ -13,9 +13,11 @@
 
 #import "KKNearbyViewController.h"
 
+#import "UIExpandingTextView.h"
 
 
-@interface KKNodeViewController () <UITextFieldDelegate,MCNearbyServiceAdvertiserDelegate,KKNearbyViewControllerDelegate>
+
+@interface KKNodeViewController () <UITextFieldDelegate,MCNearbyServiceAdvertiserDelegate,KKNearbyViewControllerDelegate,UIExpandingTextViewDelegate,UITextViewDelegate>
 {
     void (^advertiserInvitationHandler)(BOOL accept, MCSession *session);
 }
@@ -43,6 +45,7 @@
 
 @property (nonatomic,strong) KKNearbyViewController *nearbyViewController;
 
+@property (nonatomic,strong) UITextView *expandingTextView;
 
 
 @end
@@ -86,6 +89,20 @@
     [self.view addSubview:fieldUsername];
     
     
+    UITextView *textView=[[UITextView alloc] initWithFrame:CGRectMake(10, 180, width-20, 40)];
+    textView.delegate=self;
+    textView.layer.borderColor=[UIColor lightGrayColor].CGColor;
+    textView.layer.borderWidth=1;
+    
+
+    textView.font=[UIFont systemFontOfSize:14];
+    
+    [self.view addSubview:textView];
+    
+    self.expandingTextView=textView;
+    
+    
+    
     UIToolbar *barGridFooter=[[UIToolbar alloc] initWithFrame:CGRectMake(0, height-44, width, 44)];
     
     // Make BarButton Item
@@ -114,7 +131,228 @@
     
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    self.expandingTextView.text=@"";
+    
+    UIEdgeInsets edgeInsets = self.expandingTextView.contentInset;
+    
+    CGFloat offset=[UIFont systemFontSize]/2.0;
+    
+    offset=ceilf(offset);
+    
+    edgeInsets.top = offset;
+//    edgeInsets.bottom=offset;
+    
+//    self.expandingTextView.contentInset=edgeInsets;
+    
+//        self.expandingTextView.textContainerInset=UIEdgeInsetsMake(4, 0, 4, 0);
+    
+       GTMLoggerDebug(@"self.expandingTextView.textContainerInset = %@",NSStringFromUIEdgeInsets(self.expandingTextView.textContainerInset));
+    
+    [self textViewDidChange:self.expandingTextView];
+}
 
+-(void)expandingTextView:(UIExpandingTextView *)expandingTextView willChangeHeight:(float)height
+{
+    /* Adjust the height of the toolbar when the input component expands */
+    float diff = (expandingTextView.frame.size.height - height);
+    CGRect r = self.expandingTextView.frame;
+    r.origin.y += diff;
+    r.size.height -= diff;
+    self.expandingTextView.frame = r;
+}
+
+-(void)textViewDidChange:(UITextView *)textView
+{
+    
+    GTMLoggerDebug(@"%@",[NSDate date]);
+    
+    GTMLoggerDebug(@"textView.textContainerInset = %@",NSStringFromUIEdgeInsets(textView.textContainerInset));
+    
+    GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+    
+    GTMLoggerDebug(@"textview contentInset = %@",NSStringFromUIEdgeInsets(textView.contentInset));
+    
+    
+    GTMLoggerDebug(@"textview contentSize = %@",NSStringFromCGSize(textView.contentSize));
+    
+    CGFloat fontSize=14;
+    
+    CGRect frame = textView.frame;
+    
+    GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+    
+    CGFloat minHeight=fontSize+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    CGFloat maxHeight=fontSize*5+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    
+    
+    NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]};
+    
+    CGRect textRect= [textView.text boundingRectWithSize:CGSizeMake(frame.size.width, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    
+    GTMLoggerDebug(@"textview   text rect = %@",NSStringFromCGRect(textRect));
+    
+    if (textRect.size.height<fontSize*2) {
+        textView.contentSize=CGSizeMake(textView.contentSize.width,ceilf(textRect.size.height)+textView.textContainerInset.top+textView.textContainerInset.bottom);
+    }
+    
+    
+    CGFloat heightContent=textView.contentSize.height;
+
+    
+//        if (textRect.size.height>fontSize*2) {
+//            textView.textContainerInset=UIEdgeInsetsMake(2, 0, 2, 0);
+//        }
+//        else
+//        {
+//            textView.textContainerInset=UIEdgeInsetsMake(8, 0, 8, 0);
+//        }
+    
+    //    heightContent=heightContent+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    
+    //    textView.textContainerInset=UIEdgeInsetsMake(0, 0, 0, 0);
+    
+    if (heightContent>=minHeight && heightContent<=maxHeight) {
+        
+        CGFloat heightOffset=heightContent - frame.size.height;
+        
+        if (heightOffset==0) {
+            return;
+        }
+        
+        
+        if (frame.size.height+heightOffset<minHeight) {
+            return;
+        }
+        
+        frame.origin.y=frame.origin.y - heightOffset;
+        
+        frame.size.height=frame.size.height+heightOffset;
+
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            textView.frame=frame;
+
+        } completion:^(BOOL finished) {
+            GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+            
+            GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+        }
+         ];
+        
+        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+        
+    }
+    else
+    {
+        GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+        
+        GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+        
+        //        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+    }
+
+}
+
+-(void)textViewDidChange2:(UITextView *)textView
+{
+    GTMLoggerDebug(@"%@",[NSDate date]);
+    
+    GTMLoggerDebug(@"self.expandingTextView.textContainerInset = %@",NSStringFromUIEdgeInsets(self.expandingTextView.textContainerInset));
+    
+    GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+    
+    GTMLoggerDebug(@"textview contentInset = %@",NSStringFromUIEdgeInsets(textView.contentInset));
+    
+    
+    GTMLoggerDebug(@"textview contentSize = %@",NSStringFromCGSize(textView.contentSize));
+    
+    CGRect frame = textView.frame;
+    
+    GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+    
+    CGFloat minHeight=30;
+    CGFloat maxHeight=100;
+    
+    
+    NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:14]};
+    
+    CGRect textRect= [textView.text boundingRectWithSize:CGSizeMake(frame.size.width, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    
+    GTMLoggerDebug(@"textview   text rect = %@",NSStringFromCGRect(textRect));
+
+    
+    CGFloat heightContent=textView.contentSize.height;
+    
+//    h=ceilf(rect.size.height);
+    
+
+//    if (textRect.size.height>50) {
+//        self.expandingTextView.textContainerInset=UIEdgeInsetsMake(2, 0, 2, 0);
+//    }
+//    else
+//    {
+//        self.expandingTextView.textContainerInset=UIEdgeInsetsMake(8, 0, 8, 0);
+//    }
+    
+    
+    if (heightContent>=minHeight && heightContent<=maxHeight) {
+
+        CGFloat heightOffset=heightContent - frame.size.height;
+        
+        if (heightOffset==0) {
+            return;
+        }
+        
+        frame.origin.y=frame.origin.y - heightOffset;
+        
+//        frame.size.height=heightContent;
+        
+         frame.size.height=frame.size.height+heightOffset;
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            textView.frame=frame;
+            //
+        }
+                         completion:^(BOOL finished) {
+                             GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+                             
+                             GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+                         }
+         ];
+        
+        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+        
+    }
+    else
+    {
+        GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+        
+        GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+    
+//        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+    }
+    
+
+    
+
+    
+
+    
+    
+//
+
+    
+
+    
+
+    
+}
 // ---- kkaccount app  sync data ---- ///
 
 

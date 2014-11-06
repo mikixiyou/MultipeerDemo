@@ -16,10 +16,14 @@
 
 #import "KKNearbyPeer.h"
 
+#import "KKMessageCell.h"
+
+
+
 
 static NSString * const kServiceType = @"KKNearbyService";
 
-@interface KKNearbyViewController () <UIAlertViewDelegate,UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSStreamDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIGestureRecognizerDelegate>
+@interface KKNearbyViewController () <UIAlertViewDelegate,UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,MCNearbyServiceBrowserDelegate,MCSessionDelegate,MCNearbyServiceAdvertiserDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate,NSStreamDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIGestureRecognizerDelegate,UITextViewDelegate>
 {
     NSMutableData *_incomingDataBuffer;
     unsigned long totalBytesRead;
@@ -60,7 +64,8 @@ static NSString * const kServiceType = @"KKNearbyService";
 
 @property (nonatomic,strong)  UIView *talkingToolView;
 
-@property (nonatomic,strong)  UITextField *textFieldTalkingMessage;
+
+@property (nonatomic,strong)  UITextView *textViewMessage;
 
 @property (nonatomic,strong)  UIButton *btnSendData;
 @property (nonatomic,strong)  UIButton *btnSendResource;
@@ -276,7 +281,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     UICollectionViewFlowLayout *layout= [[UICollectionViewFlowLayout alloc] init];
     
-    layout.itemSize=CGSizeMake(width-6, 50);
+    layout.minimumLineSpacing=10;
     
     CGFloat y=self.peersView.frame.origin.y+self.peersView.frame.size.height+2;
     
@@ -290,7 +295,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     messageView.delegate = self;
     messageView.dataSource = self;
     
-    [messageView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"CollectionCell"];
+    [messageView registerClass:[KKMessageCell class] forCellWithReuseIdentifier:@"CollectionCell"];
     
     
     [self.view insertSubview:messageView belowSubview:self.peersView];
@@ -299,42 +304,55 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     
     UIView *toolView=[[UIView alloc] initWithFrame:CGRectMake(0, height-50, width, 50)];
-    toolView.backgroundColor=[UIColor whiteColor];
+   
+    toolView.backgroundColor=[UIColor colorWithWhite:0.99 alpha:1];
+    
+    toolView.layer.borderColor=[UIColor lightGrayColor].CGColor;
+    toolView.layer.borderWidth=1;
     
     [self.view addSubview:toolView];
     
     UIButton *btnResource=[UIButton buttonWithType:UIButtonTypeRoundedRect];
-    btnResource.frame=CGRectMake(0, 0, 80, 50);
+    btnResource.frame=CGRectMake(0, 0, 50, 50);
     [btnResource setTitle:@"Resource" forState:UIControlStateNormal];
     [btnResource addTarget:self action:@selector(sendResourceFile:) forControlEvents:UIControlEventTouchUpInside];
 
     
     UIButton *btnStream=[UIButton buttonWithType:UIButtonTypeRoundedRect];
-    btnStream.frame=CGRectMake(80, 0, 80, 50);
+    btnStream.frame=CGRectMake(btnResource.frame.size.width, 0, 50, 50);
     
     [btnStream setTitle:@"Stream" forState:UIControlStateNormal];
     
     [btnStream addTarget:self action:@selector(sendStream:) forControlEvents:UIControlEventTouchUpInside];
     
-    CGFloat widthField=width-btnResource.frame.size.width-btnStream.frame.size.width-60;
+    CGFloat widthField=width-btnResource.frame.size.width-50;
     
-    UITextField *textField1=[[UITextField alloc] initWithFrame:CGRectMake(width-widthField-60, 10, widthField, 30)];
+    UITextField *textField1=[[UITextField alloc] initWithFrame:CGRectMake(width-widthField-50, 10, widthField, 30)];
     textField1.borderStyle=UITextBorderStyleRoundedRect;
     textField1.delegate=self;
     
     textField1.placeholder=@"Data";
     
+    UITextView *textView=[[UITextView alloc] initWithFrame:CGRectMake(width-widthField-50, 5, widthField, 40)];
+    textView.delegate=self;
+    
+    textView.layer.borderColor=[UIColor lightGrayColor].CGColor;
+    textView.layer.borderWidth=1;
+    textView.layer.cornerRadius=4;
+    
+    textView.font=[UIFont systemFontOfSize:14];
+    
     
     UIButton *btnData=[UIButton buttonWithType:UIButtonTypeRoundedRect];
-    btnData.frame=CGRectMake(width-60, 0, 60, 50);
+    btnData.frame=CGRectMake(width-50, 0, 50, 50);
     [btnData setTitle:@"Send" forState:UIControlStateNormal];
     [btnData addTarget:self action:@selector(sendData:) forControlEvents:UIControlEventTouchUpInside];
     
     
     [toolView addSubview:btnResource];
-    [toolView addSubview:btnStream];
+//    [toolView addSubview:btnStream];
     
-    [toolView addSubview:textField1];
+    [toolView addSubview:textView];
     
     [toolView addSubview:btnData];
     
@@ -343,11 +361,16 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     self.btnSendResource=btnResource;
     self.btnSendStream=btnStream;
-    self.textFieldTalkingMessage=textField1;
+    
+    
+    self.textViewMessage=textView;
     
     self.btnSendData=btnData;
     
     
+    //初始化
+    self.textViewMessage.text=@"";
+    [self textViewDidChange:self.textViewMessage];
     return;
     
 }
@@ -447,9 +470,10 @@ static NSString * const kServiceType = @"KKNearbyService";
 -(void)NotifySetFirstResponder:(NSNotification *)notify
 {
     if ([[[notify userInfo] objectForKey:@"dml"] isEqualToString:@"add"]) {
+        
         self.firstResponderObject=[notify object];
         
-        if (self.firstResponderObject==self.textFieldTalkingMessage) {
+        if (self.firstResponderObject==self.textViewMessage) {
 
 //            [UIView animateWithDuration:0.3 animations:^{
 //                self.btnSendResource.frame=CGRectZero;
@@ -464,7 +488,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     }
     else
     {
-        if (self.firstResponderObject==self.textFieldTalkingMessage) {
+        if (self.firstResponderObject==self.textViewMessage) {
 //            [UIView animateWithDuration:0.3 animations:^{
 //                self.btnSendResource.frame=CGRectMake(0, 0, 80, 50);
 //                self.btnSendStream.frame=CGRectMake(80, 0, 80, 50);
@@ -489,29 +513,18 @@ static NSString * const kServiceType = @"KKNearbyService";
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"Notify_FirstResponder" object:textField userInfo:@{@"dml":@"add"}];
-    
-    if (textField==self.textFieldTalkingMessage) {
-        GTMLoggerDebug(@"\n textFieldTalkingMessage focus begin.");
-    }
-    
 }
 
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    
-    if (textField==self.textFieldTalkingMessage) {
-        
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Notify_FirstResponder" object:textField userInfo:@{@"dml":@"add"}];
     
     return YES;
 }
 
 -(BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
-    if (textField==self.textFieldTalkingMessage) {
-        
-    }
+
     return YES;
 }
 
@@ -520,11 +533,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"Notify_FirstResponder" object:textField userInfo:@{@"dml":@"delete"}];
     
-    
-    if (textField==self.textFieldTalkingMessage) {
-        
-        GTMLoggerDebug(@"\n textFieldTalkingMessage focus end.");
-    }
+
     
 }
 
@@ -536,23 +545,163 @@ static NSString * const kServiceType = @"KKNearbyService";
         }
         return NO;
     }
-    
-    if (textField==self.textFieldTalkingMessage) {
-        //        [textField resignFirstResponder];
-        
-        return YES;
-    }
-    
+
     
     return YES;
 }
 
 
 
+#pragma  mark expandingTextView delegate
+
+
+-(void)textViewDidChange:(UITextView *)textView
+{
+
+    GTMLoggerDebug(@"%@",[NSDate date]);
+    
+    GTMLoggerDebug(@"textView.textContainerInset = %@",NSStringFromUIEdgeInsets(textView.textContainerInset));
+    
+    GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+    
+    GTMLoggerDebug(@"textview contentInset = %@",NSStringFromUIEdgeInsets(textView.contentInset));
+    
+    
+    GTMLoggerDebug(@"textview contentSize = %@",NSStringFromCGSize(textView.contentSize));
+    
+    CGFloat fontSize=14;
+    
+    CGRect frame = textView.frame;
+    
+    GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+    
+    CGFloat minHeight=fontSize+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    CGFloat maxHeight=fontSize*5+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    
+    
+    NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]};
+    
+    CGRect textRect= [textView.text boundingRectWithSize:CGSizeMake(frame.size.width, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    
+    GTMLoggerDebug(@"textview   text rect = %@",NSStringFromCGRect(textRect));
+    
+    if (textRect.size.height<fontSize*2) {
+        textView.contentSize=CGSizeMake(textView.contentSize.width,ceilf(textRect.size.height)+textView.textContainerInset.top+textView.textContainerInset.bottom);
+    }
+    
+    
+    CGFloat heightContent=textView.contentSize.height;
+    
+//    heightContent=textRect.size.height;
+    
+//    if (textRect.size.height>14*2) {
+//        textView.textContainerInset=UIEdgeInsetsMake(2, 0, 2, 0);
+//    }
+//    else
+//    {
+//        textView.textContainerInset=UIEdgeInsetsMake(8, 0, 8, 0);
+//    }
+    
+//    heightContent=heightContent+textView.textContainerInset.top+textView.textContainerInset.bottom;
+    
+//    textView.textContainerInset=UIEdgeInsetsMake(0, 0, 0, 0);
+    
+    if (heightContent>=minHeight && heightContent<=maxHeight) {
+        
+        CGFloat heightOffset=heightContent - frame.size.height;
+        
+        if (heightOffset==0) {
+            return;
+        }
+        
+//        frame.origin.y=frame.origin.y - heightOffset;
+
+        if (frame.size.height+heightOffset<minHeight) {
+            return;
+        }
+        
+        frame.size.height=frame.size.height+heightOffset;
+        
+        
+        CGRect parentFrame = self.talkingToolView.frame;
+        
+        parentFrame.origin.y=parentFrame.origin.y - heightOffset;
+        parentFrame.size.height=parentFrame.size.height + heightOffset;
+        
+        
+//        self.btnSendResource=btnResource;
+//        self.btnSendStream=btnStream;
+//        
+//        self.btnSendData=btnData;
+        
+        [UIView animateWithDuration:0.2 animations:^{
+            textView.frame=frame;
+            self.talkingToolView.frame=parentFrame;
+//            self.btnSendResource.center=CGPointMake(self.btnSendResource.center.x, self.btnSendResource.center.y+heightOffset);
+//            self.btnSendStream.center=CGPointMake(self.btnSendStream.center.x, self.btnSendStream.center.y+heightOffset);
+//            self.btnSendData.center=CGPointMake(self.btnSendData.center.x, self.btnSendData.center.y+heightOffset);
+            
+            //
+        } completion:^(BOOL finished) {
+                             GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+                             
+                             GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+                         }
+         ];
+        
+        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+        
+    }
+    else
+    {
+        GTMLoggerDebug(@"textview       frame = %@",NSStringFromCGRect(textView.frame));
+        
+        GTMLoggerDebug(@"textview contentOffset = %@",NSStringFromCGPoint(textView.contentOffset));
+        
+        //        [textView setContentOffset:CGPointMake(0, 0) animated:YES];
+        
+    }
+    
+
+    
+    
+}
+
+-(BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+//    self.firstResponderObject=textView;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Notify_FirstResponder" object:textView userInfo:@{@"dml":@"add"}];
+    
+    
+    return YES;
+}
+
+-(void)textViewDidBeginEditing:(UITextView *)textView
+{
+//    self.firstResponderObject=textView;
+}
+
+-(void)textViewDidEndEditing:(UITextView *)textView
+{
+//    self.firstResponderObject=nil;
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"Notify_FirstResponder" object:textView userInfo:@{@"dml":@"delete"}];
+    
+}
+
+
+
+
+#pragma mark others
+
+
+
 -(void)resignFirstResponderFromTalking:(UITapGestureRecognizer *)gesture
 {
     
-    [self.textFieldTalkingMessage resignFirstResponder];
+    [self.textViewMessage resignFirstResponder];
     
 }
 
@@ -881,15 +1030,16 @@ static NSString * const kServiceType = @"KKNearbyService";
 
 -(void)sendData:(id)sender
 {
-    UITextField *textField=self.textFieldTalkingMessage;
+    UITextView *textView=self.textViewMessage;
     
-    if (textField.text.length==0) return;
+    if (textView.text.length==0) return;
     
     
     if (self.dialogPeer) {
-        [self sendMessage:textField.text toPeers:@[self.dialogPeer.peerID]];
+        [self sendMessage:textView.text toPeers:@[self.dialogPeer.peerID]];
         
-        textField.text=nil;
+        textView.text=@"";
+        [self textViewDidChange:textView];
     }
     else
     {
@@ -898,7 +1048,8 @@ static NSString * const kServiceType = @"KKNearbyService";
         UIAlertView *alertView=[[UIAlertView alloc] initWithTitle:title message:@"failure" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
         [alertView show];
         
-        textField.text=nil;
+        textView.text=@"";
+        [self textViewDidChange:textView];
     }
 }
 #pragma  mark keyboard notification center
@@ -933,7 +1084,6 @@ static NSString * const kServiceType = @"KKNearbyService";
         return;
     }
     
-    self.keyboardShown=YES;
     
     GTMLoggerDebug(@"keyboardWillShow");
     
@@ -954,7 +1104,18 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     //----
     
-    if (self.firstResponderObject==self.textFieldTalkingMessage) {
+    GTMLoggerDebug(@"self.firstResponderObject is %@", self.firstResponderObject);
+    
+        UIWindow *mainWindow = [[UIApplication sharedApplication] keyWindow];
+    
+//        id firstResponder = [mainWindow.rootViewController findFirstResponder];
+    
+        // 这是一个私有方法，会被apple拒绝掉的。
+        UIView *firstResponder2 = [mainWindow performSelector:@selector(firstResponder)];
+    
+     GTMLoggerDebug(@" mainWindow firstResponderObject is %@", firstResponder2);
+    
+    if (self.firstResponderObject==self.textViewMessage) {
         
         CGRect frame=self.talkingToolView.frame;
         
@@ -974,11 +1135,22 @@ static NSString * const kServiceType = @"KKNearbyService";
         
         [UIView animateWithDuration:duration animations:^{
             self.talkingToolView.frame=offsetFrame;
-        }];
+        }
+         completion:^(BOOL finished) {
+                 self.keyboardShown=YES;
+         }
+         ];
         
         
         
     }
+    else
+    {
+    
+            self.keyboardShown=YES;
+    }
+    
+    
     
     
     
@@ -1024,11 +1196,12 @@ static NSString * const kServiceType = @"KKNearbyService";
     /// scroll category view to display above of  keyboard
     
     if (self.keyboardShown == NO) {
+        //避免二次 弹出 键盘
         return;
     }
     
     
-    if (self.firstResponderObject==self.textFieldTalkingMessage) {
+    if (self.firstResponderObject==self.textViewMessage) {
         
         NSDictionary* info = [notification userInfo];
         NSNumber *number = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
@@ -1089,7 +1262,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     
     
-    if (self.firstResponderObject==self.textFieldTalkingMessage){
+    if (self.firstResponderObject==self.textViewMessage){
         CGRect frame=self.talkingToolView.frame;
         
         CGRect  keyboardFrameInTalkingView = [self.talkingView convertRect:keyboardWindowRect fromView:nil];
@@ -1327,50 +1500,12 @@ static NSString * const kServiceType = @"KKNearbyService";
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    UICollectionViewCell *cell = (UICollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionCell" forIndexPath:indexPath];
+    KKMessageCell *cell = (KKMessageCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@"CollectionCell" forIndexPath:indexPath];
     
     
     NSDictionary *info = [self.arrMessages objectAtIndex:indexPath.item];
     
-    UILabel *labelOwnerName;
-    UITextView *textViewMessage;
-    
-    CGFloat width=cell.contentView.frame.size.width;
-    
-    if ([[info objectForKey:@"source"] isEqualToString:@"local"]) {
-        
-        labelOwnerName=[[UILabel alloc] initWithFrame:CGRectMake(width-100-10, 0, 100, 20)];
-        labelOwnerName.textAlignment=NSTextAlignmentRight;
-        
-        textViewMessage=[[UITextView alloc] initWithFrame:CGRectMake(30, 20, width-30-30,40)];
-        textViewMessage.textAlignment=NSTextAlignmentRight;
-        
-        
-    }
-    else
-    {
-        
-        labelOwnerName=[[UILabel alloc] initWithFrame:CGRectMake(10, 0, 100, 20)];
-        labelOwnerName.textAlignment=NSTextAlignmentLeft;
-        
-        textViewMessage=[[UITextView alloc] initWithFrame:CGRectMake(30, 20, width-30-30,40)];
-        textViewMessage.textAlignment=NSTextAlignmentLeft;
-    }
-    
-    labelOwnerName.font=[UIFont boldSystemFontOfSize:16];
-    labelOwnerName.text = [info objectForKey:@"accountOwner"];
-    labelOwnerName.textColor=[UIColor blueColor];
-    
-    textViewMessage.text=[info objectForKey:@"text"];
-    
-    textViewMessage.editable=NO;
-    
-    
-    
-    
-    [cell.contentView addSubview:labelOwnerName];
-    [cell.contentView addSubview:textViewMessage];
-    
+    cell.info=info;
     
     
     return cell;
@@ -1382,7 +1517,19 @@ static NSString * const kServiceType = @"KKNearbyService";
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    return CGSizeMake(self.view.frame.size.width, 60);
+    NSDictionary *info = [self.arrMessages objectAtIndex:indexPath.item];
+    
+    NSString *text=[info objectForKey:@"text"];
+    
+    NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont systemFontSize]]};
+    
+    CGRect rect= [text boundingRectWithSize:CGSizeMake(self.view.frame.size.width-60, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    
+    GTMLoggerDebug(@"size is %@",NSStringFromCGSize(rect.size));
+    
+    GTMLoggerDebug(@"real size is %@",NSStringFromCGSize( CGSizeMake(self.view.frame.size.width, ceilf(rect.size.height))));
+    
+    return CGSizeMake(self.view.frame.size.width, ceilf(rect.size.height)+10);
     
 }
 
@@ -1645,7 +1792,9 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     [self.talkingMessageView reloadData];
     
-    self.textFieldTalkingMessage.text=nil;
+    self.textViewMessage.text=@"";
+    
+    [self textViewDidChange:self.textViewMessage];
     
 }
 

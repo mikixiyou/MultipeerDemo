@@ -26,6 +26,15 @@
 		35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */; };
 		35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2D19F5EF310061619F /* UIImage+Tint.m */; };
 		35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D3119F6293B0061619F /* KKNodeViewController.m */; };
+		35DBBD931A09F825003674D9 /* KKMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35DBBD921A09F825003674D9 /* KKMessageCell.m */; };
+		35DBBD981A0A010D003674D9 /* UIExpandingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35DBBD951A0A010D003674D9 /* UIExpandingTextView.m */; };
+		35DBBD991A0A010D003674D9 /* UIExpandingTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 35DBBD971A0A010D003674D9 /* UIExpandingTextViewInternal.m */; };
+		35DBBDA41A0A10C5003674D9 /* bubbleMine.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA01A0A10C5003674D9 /* bubbleMine.png */; };
+		35DBBDA51A0A10C5003674D9 /* bubbleMine@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA11A0A10C5003674D9 /* bubbleMine@2x.png */; };
+		35DBBDA61A0A10C5003674D9 /* bubbleSomeone.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA21A0A10C5003674D9 /* bubbleSomeone.png */; };
+		35DBBDA71A0A10C5003674D9 /* bubbleSomeone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA31A0A10C5003674D9 /* bubbleSomeone@2x.png */; };
+		35DBBDAA1A0A16A1003674D9 /* textbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA81A0A16A1003674D9 /* textbg.png */; };
+		35DBBDAB1A0A16A1003674D9 /* textbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA91A0A16A1003674D9 /* textbg@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +87,18 @@
 		35C47D2D19F5EF310061619F /* UIImage+Tint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Tint.m"; sourceTree = "<group>"; };
 		35C47D3019F6293B0061619F /* KKNodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNodeViewController.h; sourceTree = "<group>"; };
 		35C47D3119F6293B0061619F /* KKNodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNodeViewController.m; sourceTree = "<group>"; };
+		35DBBD911A09F825003674D9 /* KKMessageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKMessageCell.h; sourceTree = "<group>"; };
+		35DBBD921A09F825003674D9 /* KKMessageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKMessageCell.m; sourceTree = "<group>"; };
+		35DBBD941A0A010D003674D9 /* UIExpandingTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIExpandingTextView.h; path = MultipeerDemo/UIExpandingTextView.h; sourceTree = "<group>"; };
+		35DBBD951A0A010D003674D9 /* UIExpandingTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIExpandingTextView.m; path = MultipeerDemo/UIExpandingTextView.m; sourceTree = "<group>"; };
+		35DBBD961A0A010D003674D9 /* UIExpandingTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIExpandingTextViewInternal.h; path = MultipeerDemo/UIExpandingTextViewInternal.h; sourceTree = "<group>"; };
+		35DBBD971A0A010D003674D9 /* UIExpandingTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIExpandingTextViewInternal.m; path = MultipeerDemo/UIExpandingTextViewInternal.m; sourceTree = "<group>"; };
+		35DBBDA01A0A10C5003674D9 /* bubbleMine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubbleMine.png; sourceTree = "<group>"; };
+		35DBBDA11A0A10C5003674D9 /* bubbleMine@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubbleMine@2x.png"; sourceTree = "<group>"; };
+		35DBBDA21A0A10C5003674D9 /* bubbleSomeone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bubbleSomeone.png; sourceTree = "<group>"; };
+		35DBBDA31A0A10C5003674D9 /* bubbleSomeone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubbleSomeone@2x.png"; sourceTree = "<group>"; };
+		35DBBDA81A0A16A1003674D9 /* textbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = textbg.png; sourceTree = "<group>"; };
+		35DBBDA91A0A16A1003674D9 /* textbg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textbg@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +122,16 @@
 		350C585E19F0AE1400B96255 = {
 			isa = PBXGroup;
 			children = (
+				35DBBDA81A0A16A1003674D9 /* textbg.png */,
+				35DBBDA91A0A16A1003674D9 /* textbg@2x.png */,
+				35DBBDA01A0A10C5003674D9 /* bubbleMine.png */,
+				35DBBDA11A0A10C5003674D9 /* bubbleMine@2x.png */,
+				35DBBDA21A0A10C5003674D9 /* bubbleSomeone.png */,
+				35DBBDA31A0A10C5003674D9 /* bubbleSomeone@2x.png */,
+				35DBBD941A0A010D003674D9 /* UIExpandingTextView.h */,
+				35DBBD951A0A010D003674D9 /* UIExpandingTextView.m */,
+				35DBBD961A0A010D003674D9 /* UIExpandingTextViewInternal.h */,
+				35DBBD971A0A010D003674D9 /* UIExpandingTextViewInternal.m */,
 				350C586919F0AE1400B96255 /* MultipeerDemo */,
 				350C588619F0AE1400B96255 /* MultipeerDemoTests */,
 				350C586819F0AE1400B96255 /* Products */,
@@ -139,6 +170,8 @@
 				3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */,
 				354A63441A0342F100DBDCBE /* KKNearbyPeer.h */,
 				354A63451A0342F100DBDCBE /* KKNearbyPeer.m */,
+				35DBBD911A09F825003674D9 /* KKMessageCell.h */,
+				35DBBD921A09F825003674D9 /* KKMessageCell.m */,
 				350C587719F0AE1400B96255 /* Main.storyboard */,
 				350C587A19F0AE1400B96255 /* Images.xcassets */,
 				350C587C19F0AE1400B96255 /* LaunchScreen.xib */,
@@ -279,8 +312,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35DBBDAB1A0A16A1003674D9 /* textbg@2x.png in Resources */,
+				35DBBDA71A0A10C5003674D9 /* bubbleSomeone@2x.png in Resources */,
+				35DBBDA61A0A10C5003674D9 /* bubbleSomeone.png in Resources */,
+				35DBBDA51A0A10C5003674D9 /* bubbleMine@2x.png in Resources */,
+				35DBBDAA1A0A16A1003674D9 /* textbg.png in Resources */,
 				350C587919F0AE1400B96255 /* Main.storyboard in Resources */,
 				350C587E19F0AE1400B96255 /* LaunchScreen.xib in Resources */,
+				35DBBDA41A0A10C5003674D9 /* bubbleMine.png in Resources */,
 				350C587B19F0AE1400B96255 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,10 +339,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */,
+				35DBBD981A0A010D003674D9 /* UIExpandingTextView.m in Sources */,
 				354A63461A0342F100DBDCBE /* KKNearbyPeer.m in Sources */,
 				3593A2F119FF4CB40050915E /* KKNearbyAlertView.m in Sources */,
 				35838ACB1A075AB800797A40 /* GTMLogger.m in Sources */,
 				350C587619F0AE1400B96255 /* SecondViewController.m in Sources */,
+				35DBBD931A09F825003674D9 /* KKMessageCell.m in Sources */,
 				35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */,
 				350C587019F0AE1400B96255 /* AppDelegate.m in Sources */,
 				350C587319F0AE1400B96255 /* FirstViewController.m in Sources */,
@@ -314,6 +355,7 @@
 				35838AC91A075AB800797A40 /* GTMBase64.m in Sources */,
 				350C586D19F0AE1400B96255 /* main.m in Sources */,
 				35387FA619F79F4400FD5C84 /* KKTalkingViewController.m in Sources */,
+				35DBBD991A0A010D003674D9 /* UIExpandingTextViewInternal.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
