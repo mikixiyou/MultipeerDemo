@@ -10,5 +10,8 @@
 
 @interface KKMessageCell : UICollectionViewCell
 
-@property (nonatomic,strong) NSDictionary *info;
+@property (nonatomic,strong) NSDictionary *messageInfo;
+
+@property (nonatomic,strong) NSString *messageSize;
+
 @end

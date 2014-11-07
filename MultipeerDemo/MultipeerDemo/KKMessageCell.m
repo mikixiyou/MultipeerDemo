@@ -10,11 +10,19 @@
 
 #import "GTMLogger.h"
 
+#define CORNER_RADIUS 4
+
+#define ARROW_HEIGHT 8
+#define ARROW_WIDTH 8
+
+
 @interface KKMessageCell()
 
-@property (nonatomic,strong) UITextView *labelMessage;
+@property (nonatomic,strong) UITextView *textMessage;
 
 @property (nonatomic,strong) UIImageView *imageViewBubble;
+
+@property (nonatomic,strong)  CAShapeLayer *outlineLayer;
 
 
 @end
@@ -28,43 +36,31 @@
     
     if (self) {
 
-        
-        CGFloat width=self.contentView.frame.size.width;
-        CGFloat height=self.contentView.frame.size.height;
-        
-        self.imageViewBubble=[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-        
-        [self.contentView addSubview:self.imageViewBubble];
-        
-        
-        self.labelMessage=[[UITextView alloc] initWithFrame:CGRectMake(0, 0, width, height)];
-        
-        self.labelMessage.backgroundColor=[UIColor clearColor];
-        self.labelMessage.textAlignment=NSTextAlignmentLeft;
-        self.labelMessage.font=[UIFont systemFontOfSize:[UIFont systemFontSize]];
-        
-//        self.labelMessage.numberOfLines=0;
-        
-        [self.contentView addSubview:self.labelMessage];
-        
-        
+        self.contentView.backgroundColor=[UIColor lightGrayColor];
 
         
-//        if (type == BubbleTypeSomeoneElse)
-//        {
-//            bubbleImage.image = [[UIImage imageNamed:@"bubbleSomeone.png"] stretchableImageWithLeftCapWidth:21 topCapHeight:14];
-//            bubbleImage.frame = CGRectMake(x - 18, y - 4, self.dataInternal.labelSize.width + 30, self.dataInternal.labelSize.height + 15);
-//        }
-//        else {
-//            bubbleImage.image = [[UIImage imageNamed:@"bubbleMine.png"] stretchableImageWithLeftCapWidth:15 topCapHeight:14];
-//            bubbleImage.frame = CGRectMake(x - 9, y - 4, self.dataInternal.labelSize.width + 26, self.dataInternal.labelSize.height + 15);
-//        }
         
+        // Draw the border
+        CAShapeLayer *outlineLayer = [CAShapeLayer layer];
+        outlineLayer.strokeColor = [UIColor blueColor].CGColor;
+        outlineLayer.lineWidth = 1.0;
+        outlineLayer.fillColor = [UIColor clearColor].CGColor;
+        outlineLayer.name=@"bubbleLayer";
         
+        [self.contentView.layer addSublayer:outlineLayer];
         
-//        self.contentView.backgroundColor=[UIColor blueColor];
+        self.outlineLayer=outlineLayer;
         
+        // add subview
+        UITextView *textMessage=[[UITextView alloc] initWithFrame:self.contentView.bounds];
+        textMessage.editable=NO;
+        textMessage.backgroundColor=[UIColor clearColor];
+        textMessage.textAlignment=NSTextAlignmentLeft;
+        textMessage.font=[UIFont systemFontOfSize:[UIFont systemFontSize]];
         
+        [self.contentView addSubview:textMessage];
+
+        self.textMessage=textMessage;
     }
     
     return self;
@@ -72,79 +68,215 @@
 
 - (void)prepareForReuse
 {
+    
     [super prepareForReuse];
     
-    //    NSArray* array = [self.cellField.layer.sublayers copy];
-    //
-    //    self.cellField.layer.sublayers=nil;
-    //    // 不能直接 remove one item，但是可以置空  sublayes。
-    //
-    //    for (CALayer* layer in array){
-    //        [layer removeFromSuperlayer];
-    //    }
     
+//    
+//    NSArray *arrayLayers = [self.contentView.layer.sublayers copy];
+//    
+//    self.contentView.layer.sublayers = nil;
+//    // 不能直接 remove one item，但是可以置空  sublayes。
+//    
+//    for (CALayer *layer in arrayLayers) {
+//        if ([layer.name isEqualToString:@"bubbleLayer"]) {
+//            [layer removeFromSuperlayer];
+//            nil;
+//        }
+//    }
+//    
+//    for (UIView *view in self.contentView.subviews) {
+//        [view removeFromSuperview];
+//    }
 
 }
 
--(void)setInfo:(NSDictionary *)info
+
+-(UIBezierPath *)leftBubblePathWithFrame:(CGRect)frame
 {
-    _info=info;
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    
+    CGRect bubbleFrame = frame;
+    
+    CGFloat offset=8;
+    
+    // Start at the arrow
+    
+    CGPoint p0=  CGPointMake(CGRectGetMinX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset);
+    [path moveToPoint:p0];
+    
+    CGPoint p1=  CGPointMake(CGRectGetMinX(bubbleFrame)-ARROW_HEIGHT, CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset-ARROW_WIDTH/2.0);
+    [path addLineToPoint:p1];
+    
+    CGPoint p2=  CGPointMake(CGRectGetMinX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset-ARROW_WIDTH);
+    [path addLineToPoint:p2];
+    
+    CGPoint p3=  CGPointMake(CGRectGetMinX(bubbleFrame), CGRectGetMinY(bubbleFrame)+CORNER_RADIUS);
+    [path addLineToPoint:p3];
+    
+    // Top left corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMinX(bubbleFrame) + CORNER_RADIUS,
+                                       CGRectGetMinY(bubbleFrame) + CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:M_PI endAngle:3 * M_PI / 2 clockwise:YES];
+    
+
+    CGPoint p4=  CGPointMake(CGRectGetMaxX(bubbleFrame)-CORNER_RADIUS, CGRectGetMinY(bubbleFrame));
+    [path addLineToPoint:p4];
+    
+    
+    // Top right corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMaxX(bubbleFrame) - CORNER_RADIUS,
+                                       CGRectGetMinY(bubbleFrame) + CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:3 * M_PI / 2 endAngle:2 * M_PI
+                 clockwise:YES];
+    
+    CGPoint p5=  CGPointMake(CGRectGetMaxX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS);
+    [path addLineToPoint:p5];
+    
+    
+    // Bottom right corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMaxX(bubbleFrame) - CORNER_RADIUS,
+                                       CGRectGetMaxY(bubbleFrame) - CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:0 endAngle:M_PI / 2
+                 clockwise:YES];
+    
+    CGPoint p6=  CGPointMake(CGRectGetMinX(bubbleFrame)+CORNER_RADIUS, CGRectGetMaxY(bubbleFrame));
+    [path addLineToPoint:p6];
+
+    
+    // Bottom left corner
+    
+    [path addArcWithCenter:CGPointMake(CGRectGetMinX(bubbleFrame) + CORNER_RADIUS,
+                                       CGRectGetMaxY(bubbleFrame) - CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:M_PI / 2 endAngle:M_PI clockwise:YES];
+    
+    [path addLineToPoint:p0];
+    
+    [path closePath];
+    
+    return path;
+}
+
+
+-(UIBezierPath *)rightBubblePathWithFrame:(CGRect)frame
+{
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    
+    CGRect bubbleFrame = frame;
+    
+    CGFloat offset=8;
+    
+    // Start at the arrow
+    
+    CGPoint p0=  CGPointMake(CGRectGetMaxX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset);
+    [path moveToPoint:p0];
+    
+    CGPoint p1=  CGPointMake(CGRectGetMaxX(bubbleFrame) + ARROW_HEIGHT, CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset-ARROW_WIDTH/2.0);
+    [path addLineToPoint:p1];
+    
+    CGPoint p2=  CGPointMake(CGRectGetMaxX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS-offset-ARROW_WIDTH);
+    [path addLineToPoint:p2];
+    
+    CGPoint p3=  CGPointMake(CGRectGetMaxX(bubbleFrame), CGRectGetMinY(bubbleFrame)+CORNER_RADIUS);
+    [path addLineToPoint:p3];
+    
+    
+    
+    // Top right corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMaxX(bubbleFrame) - CORNER_RADIUS,
+                                       CGRectGetMinY(bubbleFrame) + CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:2 * M_PI  endAngle:3 * M_PI/2
+                 clockwise:NO];
+    
+    CGPoint p5=  CGPointMake(CGRectGetMinX(bubbleFrame) + CORNER_RADIUS, CGRectGetMinY(bubbleFrame));
+    [path addLineToPoint:p5];
+    
+    
+    
+    // Top left corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMinX(bubbleFrame) + CORNER_RADIUS,
+                                       CGRectGetMinY(bubbleFrame) + CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:3*M_PI/2 endAngle: M_PI clockwise:NO];
+    
+    
+    CGPoint p4=  CGPointMake(CGRectGetMinX(bubbleFrame), CGRectGetMaxY(bubbleFrame)-CORNER_RADIUS);
+    [path addLineToPoint:p4];
+    
+
+    
+    // Bottom left corner
+    
+    [path addArcWithCenter:CGPointMake(CGRectGetMinX(bubbleFrame) + CORNER_RADIUS,
+                                       CGRectGetMaxY(bubbleFrame) - CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:M_PI endAngle:M_PI/2 clockwise:NO];
+    
+    CGPoint p6=  CGPointMake(CGRectGetMaxX(bubbleFrame) - CORNER_RADIUS, CGRectGetMaxY(bubbleFrame));
+    [path addLineToPoint:p6];
+    
+    
+    // Bottom right corner
+    [path addArcWithCenter:CGPointMake(CGRectGetMaxX(bubbleFrame) - CORNER_RADIUS,
+                                       CGRectGetMaxY(bubbleFrame) - CORNER_RADIUS)
+                    radius:CORNER_RADIUS startAngle:M_PI / 2 endAngle:0
+                 clockwise:NO];
+    
+    [path addLineToPoint:p0];
+    
+    [path closePath];
+    
+    return path;
+}
+
+
+
+-(void)setMessageInfo:(NSDictionary *)messageInfo
+{
+    _messageInfo=messageInfo;
     
     
     CGFloat width=self.contentView.frame.size.width;
     
+    
     NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont systemFontSize]]};
     
-    CGRect rect= [[info objectForKey:@"text"] boundingRectWithSize:CGSizeMake(width-60, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    CGRect rect= [[messageInfo objectForKey:@"text"] boundingRectWithSize:CGSizeMake(width-60, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
     
-    GTMLoggerDebug(@"rect is %@",NSStringFromCGRect(rect));
+    GTMLoggerDebug(@"real text rect is %@",NSStringFromCGRect(rect));
     
-    CGFloat widthMessageLable = ceilf(rect.size.width);
-    CGFloat heightMessageLable = ceilf(rect.size.height);
+    CGFloat widthMessage = ceilf(rect.size.width)+10;
+    
+    CGFloat heightMessage = ceilf(rect.size.height)+16;
+    
+    CGRect frameMessage;
     
     
-    if ([[info objectForKey:@"source"] isEqualToString:@"local"]) {
+    if ([[messageInfo objectForKey:@"source"] isEqualToString:@"local"]) {
         
-        self.labelMessage.frame = CGRectMake(width-(widthMessageLable+20), 5, widthMessageLable,heightMessageLable);
+        frameMessage= CGRectMake(width-(widthMessage+20), 5, widthMessage,heightMessage);
 
-        self.labelMessage.textColor=[UIColor greenColor];
+        self.textMessage.textColor=[UIColor greenColor];
         
-        CGFloat x=self.labelMessage.frame.origin.x;
-        CGFloat y=self.labelMessage.frame.origin.y;
+        self.textMessage.frame=frameMessage;
         
-        self.imageViewBubble.frame = CGRectMake(x - 3, y - 4, self.labelMessage.frame.size.width + 10, self.labelMessage.frame.size.height + 8);
-        
-        self.imageViewBubble.image = [[UIImage imageNamed:@"bubbleMine.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.5, 0.5, 0, 0)];
-        
-//        self.imageViewBubble.image          = [UIImage imageNamed:@"bubbleMine.png"];
-        self.imageViewBubble.contentMode    = UIViewContentModeScaleToFill;
-        
-
-        
-        
+        self.outlineLayer.path=[self rightBubblePathWithFrame:frameMessage].CGPath;
     }
     else
     {
+        frameMessage= CGRectMake(20, 5, widthMessage,heightMessage);
         
-        self.labelMessage.frame= CGRectMake(20, 3, widthMessageLable,heightMessageLable);
+        self.textMessage.textColor=[UIColor redColor];
         
-        self.labelMessage.textColor=[UIColor redColor];
-
-        CGFloat x=self.labelMessage.frame.origin.x;
-        CGFloat y=self.labelMessage.frame.origin.y;
+        self.textMessage.frame=frameMessage;
         
-        self.imageViewBubble.frame = CGRectMake(x - 3, y - 4, self.labelMessage.frame.size.width + 10, self.labelMessage.frame.size.height + 8);
-        
-        self.imageViewBubble.image = [[UIImage imageNamed:@"bubbleSomeone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.5, 0.5, 0, 0)];
-        
-//        self.imageViewBubble.image          = [UIImage imageNamed:@"bubbleSomeone.png"];
-        self.imageViewBubble.contentMode    = UIViewContentModeScaleToFill;
-        
-
+        self.outlineLayer.path=[self leftBubblePathWithFrame:frameMessage].CGPath;
     }
     
+    GTMLoggerDebug(@"self.textMessage.frameMessage is %@",NSStringFromCGRect(frameMessage));
     
-    self.labelMessage.text=[info objectForKey:@"text"];
+    self.textMessage.text=[messageInfo objectForKey:@"text"];
+    
+//    [self setNeedsDisplay];
+    
     
 
 }

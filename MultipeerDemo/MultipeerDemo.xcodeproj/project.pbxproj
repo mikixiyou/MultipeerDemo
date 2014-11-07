@@ -23,6 +23,7 @@
 		35838ACB1A075AB800797A40 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 35838AC81A075AB800797A40 /* GTMLogger.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		3593A2EE19FF3B450050915E /* KKNearbyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3593A2ED19FF3B450050915E /* KKNearbyViewController.m */; };
 		3593A2F119FF4CB40050915E /* KKNearbyAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */; };
+		35A24F491A0B7BC300FBB1A9 /* BubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35A24F481A0B7BC300FBB1A9 /* BubbleView.m */; };
 		35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */; };
 		35C47D2F19F5EF310061619F /* UIImage+Tint.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D2D19F5EF310061619F /* UIImage+Tint.m */; };
 		35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35C47D3119F6293B0061619F /* KKNodeViewController.m */; };
@@ -35,6 +36,7 @@
 		35DBBDA71A0A10C5003674D9 /* bubbleSomeone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA31A0A10C5003674D9 /* bubbleSomeone@2x.png */; };
 		35DBBDAA1A0A16A1003674D9 /* textbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA81A0A16A1003674D9 /* textbg.png */; };
 		35DBBDAB1A0A16A1003674D9 /* textbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35DBBDA91A0A16A1003674D9 /* textbg@2x.png */; };
+		35E425331A0C855F00C29E55 /* BezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E425321A0C855F00C29E55 /* BezierPathView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +83,8 @@
 		3593A2ED19FF3B450050915E /* KKNearbyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNearbyViewController.m; sourceTree = "<group>"; };
 		3593A2EF19FF4CB40050915E /* KKNearbyAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKNearbyAlertView.h; sourceTree = "<group>"; };
 		3593A2F019FF4CB40050915E /* KKNearbyAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKNearbyAlertView.m; sourceTree = "<group>"; };
+		35A24F471A0B7BC300FBB1A9 /* BubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BubbleView.h; sourceTree = "<group>"; };
+		35A24F481A0B7BC300FBB1A9 /* BubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BubbleView.m; sourceTree = "<group>"; };
 		35C47D2A19F5EF310061619F /* UIImage+ProportionalFill.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ProportionalFill.h"; sourceTree = "<group>"; };
 		35C47D2B19F5EF310061619F /* UIImage+ProportionalFill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ProportionalFill.m"; sourceTree = "<group>"; };
 		35C47D2C19F5EF310061619F /* UIImage+Tint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Tint.h"; sourceTree = "<group>"; };
@@ -99,6 +103,8 @@
 		35DBBDA31A0A10C5003674D9 /* bubbleSomeone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bubbleSomeone@2x.png"; sourceTree = "<group>"; };
 		35DBBDA81A0A16A1003674D9 /* textbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = textbg.png; sourceTree = "<group>"; };
 		35DBBDA91A0A16A1003674D9 /* textbg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "textbg@2x.png"; sourceTree = "<group>"; };
+		35E425311A0C855F00C29E55 /* BezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierPathView.h; sourceTree = "<group>"; };
+		35E425321A0C855F00C29E55 /* BezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BezierPathView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +178,10 @@
 				354A63451A0342F100DBDCBE /* KKNearbyPeer.m */,
 				35DBBD911A09F825003674D9 /* KKMessageCell.h */,
 				35DBBD921A09F825003674D9 /* KKMessageCell.m */,
+				35A24F471A0B7BC300FBB1A9 /* BubbleView.h */,
+				35A24F481A0B7BC300FBB1A9 /* BubbleView.m */,
+				35E425311A0C855F00C29E55 /* BezierPathView.h */,
+				35E425321A0C855F00C29E55 /* BezierPathView.m */,
 				350C587719F0AE1400B96255 /* Main.storyboard */,
 				350C587A19F0AE1400B96255 /* Images.xcassets */,
 				350C587C19F0AE1400B96255 /* LaunchScreen.xib */,
@@ -340,6 +350,7 @@
 			files = (
 				35387FA319F7955C00FD5C84 /* KKConnectViewController.m in Sources */,
 				35DBBD981A0A010D003674D9 /* UIExpandingTextView.m in Sources */,
+				35A24F491A0B7BC300FBB1A9 /* BubbleView.m in Sources */,
 				354A63461A0342F100DBDCBE /* KKNearbyPeer.m in Sources */,
 				3593A2F119FF4CB40050915E /* KKNearbyAlertView.m in Sources */,
 				35838ACB1A075AB800797A40 /* GTMLogger.m in Sources */,
@@ -349,6 +360,7 @@
 				350C587019F0AE1400B96255 /* AppDelegate.m in Sources */,
 				350C587319F0AE1400B96255 /* FirstViewController.m in Sources */,
 				35C47D3219F6293B0061619F /* KKNodeViewController.m in Sources */,
+				35E425331A0C855F00C29E55 /* BezierPathView.m in Sources */,
 				35C47D2E19F5EF310061619F /* UIImage+ProportionalFill.m in Sources */,
 				35838ACA1A075AB800797A40 /* GTMLogger+ASL.m in Sources */,
 				3593A2EE19FF3B450050915E /* KKNearbyViewController.m in Sources */,

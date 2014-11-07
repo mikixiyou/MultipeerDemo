@@ -15,6 +15,8 @@
 
 #import "UIExpandingTextView.h"
 
+#import "BubbleView.h"
+
 
 
 @interface KKNodeViewController () <UITextFieldDelegate,MCNearbyServiceAdvertiserDelegate,KKNearbyViewControllerDelegate,UIExpandingTextViewDelegate,UITextViewDelegate>
@@ -46,6 +48,8 @@
 @property (nonatomic,strong) KKNearbyViewController *nearbyViewController;
 
 @property (nonatomic,strong) UITextView *expandingTextView;
+
+@property (nonatomic,strong) BubbleView *bubble;
 
 
 @end
@@ -102,6 +106,13 @@
     self.expandingTextView=textView;
     
     
+//    self.bubble=[[BubbleView alloc] initWithFrame:CGRectMake(150, 250, 10, 10)];
+    
+    self.bubble=[[BubbleView alloc] initWithFrame:CGRectMake(50, 250, 200, 200) activationFrame:CGRectMake(50, 250, 30, 40)];
+    
+    [self.view addSubview:self.bubble];
+    
+    
     
     UIToolbar *barGridFooter=[[UIToolbar alloc] initWithFrame:CGRectMake(0, height-44, width, 44)];
     
@@ -113,9 +124,11 @@
     UIBarButtonItem *flex1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
   
     UIBarButtonItem *barItemNearby =  [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(segNearbyPeersView:)];
+   
+    UIBarButtonItem *barItemBubble =  [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRedo target:self action:@selector(bubbleTest)];
     
     
-    NSArray *barItemsGridFooter=@[barItemNearby,flex1,barItemTalking];
+    NSArray *barItemsGridFooter=@[barItemNearby,flex1,barItemBubble,flex1,barItemTalking];
     
     [barGridFooter setItems:barItemsGridFooter];
     
@@ -153,14 +166,12 @@
     [self textViewDidChange:self.expandingTextView];
 }
 
--(void)expandingTextView:(UIExpandingTextView *)expandingTextView willChangeHeight:(float)height
+
+-(void)bubbleTest
 {
-    /* Adjust the height of the toolbar when the input component expands */
-    float diff = (expandingTextView.frame.size.height - height);
-    CGRect r = self.expandingTextView.frame;
-    r.origin.y += diff;
-    r.size.height -= diff;
-    self.expandingTextView.frame = r;
+
+    [self.bubble StageGrow];
+    
 }
 
 -(void)textViewDidChange:(UITextView *)textView

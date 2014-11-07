@@ -1035,6 +1035,21 @@ static NSString * const kServiceType = @"KKNearbyService";
     if (textView.text.length==0) return;
     
     
+    
+    // test bubble view begin
+    [self.arrMessages addObject: @{@"accountOwner":self.accountOwner,@"source":@"local",@"type":@"message",@"text":textView.text,@"date":[NSDate date],@"status":@"ok"}];
+    
+    [self.talkingMessageView reloadData];
+    
+    
+    textView.text=@"";
+    [self textViewDidChange:textView];
+    
+    
+    
+    return;
+    // end of test bubble view.
+    
     if (self.dialogPeer) {
         [self sendMessage:textView.text toPeers:@[self.dialogPeer.peerID]];
         
@@ -1505,7 +1520,7 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     NSDictionary *info = [self.arrMessages objectAtIndex:indexPath.item];
     
-    cell.info=info;
+    cell.messageInfo=info;
     
     
     return cell;
@@ -1523,13 +1538,17 @@ static NSString * const kServiceType = @"KKNearbyService";
     
     NSDictionary  *dic = @{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont systemFontSize]]};
     
-    CGRect rect= [text boundingRectWithSize:CGSizeMake(self.view.frame.size.width-60, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
+    CGRect rect= [text boundingRectWithSize:CGSizeMake(collectionView.frame.size.width-60, 9999) options:NSStringDrawingUsesLineFragmentOrigin attributes:dic context:nil];
     
-    GTMLoggerDebug(@"size is %@",NSStringFromCGSize(rect.size));
+    GTMLoggerDebug(@"text size is %@",NSStringFromCGSize(rect.size));
     
-    GTMLoggerDebug(@"real size is %@",NSStringFromCGSize( CGSizeMake(self.view.frame.size.width, ceilf(rect.size.height))));
     
-    return CGSizeMake(self.view.frame.size.width, ceilf(rect.size.height)+10);
+    CGSize size=CGSizeMake(collectionView.frame.size.width-10, ceilf(rect.size.height)+16+10);
+   
+    GTMLoggerDebug(@"cell size is %@",NSStringFromCGSize(size));
+   
+    
+    return size;
     
 }
 
